@@ -13,7 +13,7 @@ To make a package from source:
 mojo package datastructs -o package/datastructs.📦
 ```
 
-To test all the code:
+To run all the tests:
 ```
 mojo test -I . test
 ```
