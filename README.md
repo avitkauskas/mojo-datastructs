@@ -1,1 +1,1 @@
-# deque-mojo
+# Deque (double-ended queue) for mojo
