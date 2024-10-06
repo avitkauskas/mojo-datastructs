@@ -164,6 +164,74 @@ struct Deque[ElementType: CollectionElement](
     # Operator dunders
     # ===-------------------------------------------------------------------===#
 
+    fn __eq__[
+        EqualityElementType: EqualityComparableCollectionElement, //
+    ](
+        self: Deque[EqualityElementType], other: Deque[EqualityElementType]
+    ) -> Bool:
+        """Checks if two deques are equal.
+
+        Parameters:
+            EqualityElementType: The type of the elements in the list.
+                Must implement the trait `EqualityComparableCollectionElement`.
+
+        Args:
+            other: The deque to compare with.
+
+        Returns:
+            `True` if the deques are equal, `False` otherwise.
+        """
+        if len(self) != len(other):
+            return False
+        for i in range(len(self)):
+            offset_self = (self.head + i) & (self.capacity - 1)
+            offset_other = (other.head + i) & (other.capacity - 1)
+            if (self.data + offset_self)[] != (other.data + offset_other)[]:
+                return False
+        return True
+
+    fn __ne__[
+        EqualityElementType: EqualityComparableCollectionElement, //
+    ](
+        self: Deque[EqualityElementType], other: Deque[EqualityElementType]
+    ) -> Bool:
+        """Checks if two deques are not equal.
+
+        Parameters:
+            EqualityElementType: The type of the elements in the list.
+                Must implement the trait `EqualityComparableCollectionElement`.
+
+        Args:
+            other: The deque to compare with.
+
+        Returns:
+            `True` if the deques are not equal, `False` otherwise.
+        """
+        return not (self == other)
+
+    fn __contains__[
+        EqualityElementType: EqualityComparableCollectionElement, //
+    ](
+        self: Deque[EqualityElementType], value: EqualityElementType
+    ) -> Bool:
+        """Verify if a given value is present in the deque.
+
+        Parameters:
+            EqualityElementType: The type of the elements in the list.
+                Must implement the trait `EqualityComparableCollectionElement`.
+
+        Args:
+            value: The value to find.
+
+        Returns:
+            True if the value is contained in the deque, False otherwise.
+        """
+        for i in range(len(self)):
+            var offset = (self.head + i) & (self.capacity - 1)
+            if (self.data + offset)[] == value:
+                return True
+        return False
+
     fn __iter__(
         ref [_]self,
     ) -> _DequeIter[ElementType]:

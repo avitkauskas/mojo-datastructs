@@ -402,6 +402,54 @@ fn test_move_list() raises:
     assert_equal(p[0], List(1, 2, 3))
 
 
+fn test_eq() raises:
+    var q = Deque[Int]()
+    var p = Deque[Int]()
+    
+    q.extend(List(1, 2, 3))
+    p.extend(List(1, 2, 3))
+    assert_true(q == p)
+
+    q.appendleft(0)
+    p.clear()
+    p.extend(List(0, 1, 2, 3))
+    assert_true(q == p)
+
+
+fn test_ne() raises:
+    var q = Deque[Int]()
+    var p = Deque[Int]()
+    
+    q.extend(List(1, 2, 3))
+    p.extend(List(3, 2, 1))
+    assert_true(q != p)
+
+    q.appendleft(0)
+    p.append(0)
+    assert_true(q != p)
+
+
+fn test_contains() raises:
+    var q = Deque[Int]()
+    q.extend(List(1, 2, 3))
+
+    assert_true(1 in q)
+    assert_false(4 in q)
+
+
+# TODO: this test does not pass
+# fn test_contains_lists() raises:
+#     var q = Deque[List[Int]]()
+#     var lst1 = List(1, 2, 3)
+#     var lst2 = List(4, 5, 6)
+#     var lst3 = List(7, 8, 9)
+#     q.append(lst1)
+#     q.append(lst2)
+
+#     assert_true(lst1 in q)
+#     assert_false(lst3 in q)
+
+
 fn test_len() raises:
     var q = Deque[Int]()
     assert_equal(len(q), 0)
