@@ -16,7 +16,7 @@ fn test_init_default_empty() raises:
 fn test_init_minlen_empty() raises:
     var q = Deque[Int](minlen=2)
 
-    assert_equal(q.capacity, 2)
+    assert_equal(q.capacity, q.default_capacity)
     assert_equal(q.head, 0)
     assert_equal(q.tail, 0)
     assert_equal(q.minlen, 2)
@@ -63,7 +63,7 @@ fn test_append_no_realloc() raises:
 
 
 fn test_append_with_realloc() raises:
-    var q = Deque[Int](minlen=2)
+    var q = Deque[Int](capacity=2, minlen=2)
 
     q.append(1)
     assert_equal(q.capacity, 2)
@@ -138,7 +138,7 @@ fn test_appendleft_no_realloc() raises:
 
 
 fn test_appendleft_with_realloc() raises:
-    var q = Deque[Int](minlen=2)
+    var q = Deque[Int](capacity=2, minlen=2)
 
     q.appendleft(1)
     assert_equal(q.capacity, 2)
@@ -195,7 +195,7 @@ fn test_extendleft() raises:
 
 
 fn test_pop() raises:
-    var q = Deque[Int](minlen=2, shrinking=True)
+    var q = Deque[Int](capacity=2, minlen=2, shrinking=True)
     assert_equal(q.capacity, 2)
     with assert_raises():
         _ = q.pop()
@@ -210,7 +210,7 @@ fn test_pop() raises:
 
 
 fn test_popleft() raises:
-    var q = Deque[Int](minlen=2, shrinking=True)
+    var q = Deque[Int](capacity=2, minlen=2, shrinking=True)
     assert_equal(q.capacity, 2)
     with assert_raises():
         _ = q.popleft()
@@ -352,6 +352,7 @@ fn test_iter_list() raises:
     for e in q:
         if e == lst1:
             e[0] = 7
+            assert_equal(e, List(7, 2, 3))
     assert_equal(q[0], List(1, 2, 3))
 
 
