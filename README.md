@@ -3,7 +3,7 @@
 
 ### Instructions
 
-To use the package, just copy the `datastructs.📦` to your packages location or copy the `datastructs` directory and use it as a module. And then in your source code import what you need, like:
+To use the package, just copy the `datastructs.📦` to your packages location or copy the `datastructs` directory and use it as a module. Then in your source code import what you need:
 ```mojo
 from datastructs import Deque
 ```
