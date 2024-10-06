@@ -1,0 +1,12 @@
+[project]
+authors = ["Alvydas Vitkauskas <alvydas.vitkauskas@gmail.com>"]
+channels = ["conda-forge", "https://conda.modular.com/max-nightly"]
+description = "Double-ended queue (Deque) implementation"
+name = "deque"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+max = ">=24.5.0,<25"
