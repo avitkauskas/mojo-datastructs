@@ -24,7 +24,7 @@ struct _DequeIter[ElementType: CollectionElement]:
         inout self,
     ) -> ElementType:
         self.index += 1
-        var offset = (self.src.head + self.index - 1) & self.src.capacity_mask
+        var offset = (self.src.head + self.index - 1) & (self.src.capacity - 1)
         return (self.src.data + offset)[]
 
     fn __len__(self) -> Int:
@@ -48,7 +48,7 @@ struct Deque[ElementType: CollectionElement](
     var tail: Int
     """The index of the tail: one behind the last element of the queue."""
 
-    var capacity_mask: Int
+    var capacity: Int
     """The amount of elements that can fit in the queue without resizing it."""
 
     var minlen: Int
@@ -87,7 +87,7 @@ struct Deque[ElementType: CollectionElement](
         if maxlen >= 0:
             capacity = min(capacity, bit_ceil(maxlen))
 
-        self.capacity_mask = capacity - 1
+        self.capacity = capacity
         self.data = UnsafePointer[ElementType].alloc(capacity)
         self.head = 0
         self.tail = 0
@@ -127,7 +127,7 @@ struct Deque[ElementType: CollectionElement](
             existing: The existing deque.
         """
         self.data = existing.data
-        self.capacity_mask = existing.capacity_mask
+        self.capacity = existing.capacity
         self.head = existing.head
         self.tail = existing.tail
         self.minlen = existing.minlen
@@ -153,7 +153,7 @@ struct Deque[ElementType: CollectionElement](
 
     fn __del__(owned self):
         for i in range(len(self)):
-            var offset = (self.head + i) & self.capacity_mask
+            var offset = (self.head + i) & (self.capacity - 1)
             (self.data + offset).destroy_pointee()
         self.data.free()
 
@@ -179,7 +179,7 @@ struct Deque[ElementType: CollectionElement](
         Returns:
             The number of elements in the deque.
         """
-        return (self.tail - self.head) & self.capacity_mask
+        return (self.tail - self.head) & (self.capacity - 1)
 
     @always_inline
     fn __bool__(self) -> Bool:
@@ -212,37 +212,37 @@ struct Deque[ElementType: CollectionElement](
         if not 0 <= normalized_idx < len(self):
             raise "IndexError: Index out of range"
 
-        var offset = (self.head + normalized_idx) & self.capacity_mask
+        var offset = (self.head + normalized_idx) & (self.capacity - 1)
         return (self.data + offset)[]
 
     fn append(inout self, owned value: ElementType):
         """Add `value` to the right side of the deque."""
         (self.data + self.tail).init_pointee_move(value^)
-        self.tail = (self.tail + 1) & self.capacity_mask
+        self.tail = (self.tail + 1) & (self.capacity - 1)
         if self.head == self.tail:
-            self._realloc((self.capacity_mask + 1) << 1)
+            self._realloc(self.capacity << 1)
         if self.maxlen > 0 and len(self) > self.maxlen:
             (self.data + self.head).destroy_pointee()
-            self.head = (self.head + 1) & self.capacity_mask
+            self.head = (self.head + 1) & (self.capacity - 1)
 
     fn appendleft(inout self, owned value: ElementType):
         """Add `value` to the left side of the deque."""
-        self.head = (self.head - 1) & self.capacity_mask
+        self.head = (self.head - 1) & (self.capacity - 1)
         (self.data + self.head).init_pointee_move(value^)
         if self.head == self.tail:
-            self._realloc((self.capacity_mask + 1) << 1)
+            self._realloc(self.capacity << 1)
         if self.maxlen > 0 and len(self) > self.maxlen:
-            self.tail = (self.tail - 1) & self.capacity_mask
+            self.tail = (self.tail - 1) & (self.capacity - 1)
             (self.data + self.tail).destroy_pointee()
 
     fn clear(inout self):
         """Remove all elements from the deque leaving it with length 0."""
         for i in range(len(self)):
-            var offset = (self.head + i) & self.capacity_mask
+            var offset = (self.head + i) & (self.capacity - 1)
             (self.data + offset).destroy_pointee()
         self.data.free()
-        self.capacity_mask = self.minlen - 1
-        self.data = UnsafePointer[ElementType].alloc(self.minlen)
+        self.capacity = self.minlen
+        self.data = UnsafePointer[ElementType].alloc(self.capacity)
         self.head = 0
         self.tail = 0
 
@@ -252,7 +252,7 @@ struct Deque[ElementType: CollectionElement](
         """Count the number of the deque elements equal to `value`."""
         var count = 0
         for i in range(len(self)):
-            var offset = (self.head + i) & self.capacity_mask
+            var offset = (self.head + i) & (self.capacity - 1)
             if (self.data + offset)[] == value:
                 count += 1
         return count
@@ -299,7 +299,7 @@ struct Deque[ElementType: CollectionElement](
         stop_normalized = _clip(stop_normalized, 0, len(self))
 
         for i in range(start_normalized, stop_normalized):
-            var offset = (self.head + i) & self.capacity_mask
+            var offset = (self.head + i) & (self.capacity - 1)
             if (self.data + offset)[] == value:
                 return i
         raise "ValueError: Given element is not in deque"
@@ -311,15 +311,15 @@ struct Deque[ElementType: CollectionElement](
         if self.head == self.tail:
             raise "IndexError: Deque is empty"
 
-        self.tail = (self.tail - 1) & self.capacity_mask
+        self.tail = (self.tail - 1) & (self.capacity - 1)
         var result = (self.data + self.tail).take_pointee()
 
         if (
             self.shrinking
-            and (self.capacity_mask + 1) > self.minlen
-            and (self.capacity_mask + 1) // 4 >= len(self)
+            and self.capacity > self.minlen
+            and self.capacity // 4 >= len(self)
         ):
-            self._realloc((self.capacity_mask + 1) >> 1)
+            self._realloc(self.capacity >> 1)
 
         return result
 
@@ -331,14 +331,14 @@ struct Deque[ElementType: CollectionElement](
             raise "IndexError: Deque is empty"
 
         result = (self.data + self.head).take_pointee()
-        self.head = (self.head + 1) & self.capacity_mask
+        self.head = (self.head + 1) & (self.capacity - 1)
 
         if (
             self.shrinking
-            and (self.capacity_mask + 1) > self.minlen
-            and (self.capacity_mask + 1) // 4 >= len(self)
+            and self.capacity > self.minlen
+            and self.capacity // 4 >= len(self)
         ):
-            self._realloc((self.capacity_mask + 1) >> 1)
+            self._realloc(self.capacity >> 1)
 
         return result
 
@@ -346,8 +346,8 @@ struct Deque[ElementType: CollectionElement](
         """Reverse the elements of the deque in-place."""
         var last = self.head + len(self) - 1
         for i in range(len(self) // 2):
-            var src = (self.head + i) & self.capacity_mask
-            var dst = (last - i) & self.capacity_mask
+            var src = (self.head + i) & (self.capacity - 1)
+            var dst = (last - i) & (self.capacity - 1)
             var tmp = (self.data + dst).take_pointee()
             (self.data + src).move_pointee_into(self.data + dst)
             (self.data + src).init_pointee_move(tmp^)
@@ -357,21 +357,21 @@ struct Deque[ElementType: CollectionElement](
         """
         if n > 0:
             for _ in range(n):
-                self.tail = (self.tail - 1) & self.capacity_mask
-                self.head = (self.head - 1) & self.capacity_mask
+                self.tail = (self.tail - 1) & (self.capacity - 1)
+                self.head = (self.head - 1) & (self.capacity - 1)
                 (self.data + self.tail).move_pointee_into(self.data + self.head)
         else:
             for _ in range(-n):
                 (self.data + self.head).move_pointee_into(self.data + self.tail)
-                self.tail = (self.tail + 1) & self.capacity_mask
-                self.head = (self.head + 1) & self.capacity_mask
+                self.tail = (self.tail + 1) & (self.capacity - 1)
+                self.head = (self.head + 1) & (self.capacity - 1)
 
     fn _realloc(inout self, new_capacity: Int):
         """Reallocate data to a new buffer of the size of `new_capacity`."""
-        var deque_len = len(self) if self else (self.capacity_mask + 1)
+        var deque_len = len(self) if self else self.capacity
 
         var tail_len = self.tail
-        var head_len = (self.capacity_mask + 1) - self.head
+        var head_len = self.capacity - self.head
 
         if head_len > deque_len:
             head_len = deque_len
@@ -395,7 +395,7 @@ struct Deque[ElementType: CollectionElement](
         if self.data:
             self.data.free()
         self.data = new_data
-        self.capacity_mask = new_capacity - 1
+        self.capacity = new_capacity
 
 
 fn _clip(value: Int, start: Int, end: Int) -> Int:
