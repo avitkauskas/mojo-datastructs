@@ -1,1 +1,2 @@
-# Deque (double-ended queue) for mojo
+# Some missing datastructures for mojo
+## Deque (double-ended queue)
