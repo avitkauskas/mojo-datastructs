@@ -81,9 +81,6 @@ struct Deque[ElementType: CollectionElement](
         else:
             min_capacity = bit_ceil(minlen)
 
-        if min_capacity > deque_capacity:
-            deque_capacity = min_capacity
-
         if maxlen >= 0:
             deque_capacity = min(deque_capacity, bit_ceil(maxlen))
 
@@ -126,20 +123,6 @@ struct Deque[ElementType: CollectionElement](
 
         self.tail = length
 
-    fn __moveinit__(inout self, owned existing: Self):
-        """Moves data of an existing deque into a new one.
-
-        Args:
-            existing: The existing deque.
-        """
-        self.data = existing.data
-        self.capacity = existing.capacity
-        self.head = existing.head
-        self.tail = existing.tail
-        self.minlen = existing.minlen
-        self.maxlen = existing.maxlen
-        self.shrinking = existing.shrinking
-
     fn __copyinit__(inout self, existing: Self):
         """Creates a deepcopy of the given deque.
 
@@ -157,6 +140,20 @@ struct Deque[ElementType: CollectionElement](
             (self.data + i).init_pointee_copy((existing.data + offset)[])
 
         self.tail = len(existing)
+
+    fn __moveinit__(inout self, owned existing: Self):
+        """Moves data of an existing deque into a new one.
+
+        Args:
+            existing: The existing deque.
+        """
+        self.data = existing.data
+        self.capacity = existing.capacity
+        self.head = existing.head
+        self.tail = existing.tail
+        self.minlen = existing.minlen
+        self.maxlen = existing.maxlen
+        self.shrinking = existing.shrinking
 
     fn __del__(owned self):
         """Destroys all elements in the deque and free its memory."""
@@ -247,6 +244,15 @@ struct Deque[ElementType: CollectionElement](
     # ===-------------------------------------------------------------------===#
 
     @always_inline
+    fn __bool__(self) -> Bool:
+        """Checks whether the deque has any elements or not.
+
+        Returns:
+            `False` if the deque is empty, `True` if there is at least one element.
+        """
+        return self.head != self.tail
+
+    @always_inline
     fn __len__(self) -> Int:
         """Gets the number of elements in the deque.
 
@@ -255,14 +261,26 @@ struct Deque[ElementType: CollectionElement](
         """
         return (self.tail - self.head) & (self.capacity - 1)
 
-    @always_inline
-    fn __bool__(self) -> Bool:
-        """Checks whether the deque has any elements or not.
+    @no_inline
+    fn format_to[
+        RepresentableElementType: RepresentableCollectionElement, //
+    ](self: Deque[RepresentableElementType], inout writer: Formatter):
+        """Writes `my_list.__str__()` to a `Formatter`.
 
-        Returns:
-            `False` if the deque is empty, `True` if there is at least one element.
+        Parameters:
+            RepresentableElementType: The type of the Deque elements.
+                Must have the trait `RepresentableCollectionElement`.
+
+        Args:
+            writer: The formatter to write to.
         """
-        return self.head != self.tail
+        writer.write("Deque(")
+        for i in range(len(self)):
+            offset = (self.head + i) & (self.capacity - 1)
+            writer.write(repr((self.data + offset)[]))
+            if i < len(self) - 1:
+                writer.write(", ")
+        writer.write(")")
 
     @no_inline
     fn __str__[
@@ -294,27 +312,6 @@ struct Deque[ElementType: CollectionElement](
         var writer = output._unsafe_to_formatter()
         self.format_to(writer)
         return output^
-
-    @no_inline
-    fn format_to[
-        RepresentableElementType: RepresentableCollectionElement, //
-    ](self: Deque[RepresentableElementType], inout writer: Formatter):
-        """Writes `my_list.__str__()` to a `Formatter`.
-
-        Parameters:
-            RepresentableElementType: The type of the Deque elements.
-                Must have the trait `RepresentableCollectionElement`.
-
-        Args:
-            writer: The formatter to write to.
-        """
-        writer.write("Deque(")
-        for i in range(len(self)):
-            offset = (self.head + i) & (self.capacity - 1)
-            writer.write(repr((self.data + offset)[]))
-            if i < len(self) - 1:
-                writer.write(", ")
-        writer.write(")")
 
     @no_inline
     fn __repr__[
@@ -505,6 +502,22 @@ struct Deque[ElementType: CollectionElement](
             if (self.data + offset)[] == value:
                 return i
         raise "ValueError: Given element is not in deque"
+
+    fn peek(self) -> ElementType:
+        """Inspect the last (rightmost) element of the deque without removing it.
+
+        Returns:
+            The the last (rightmost) element of the deque.
+        """
+        return (self.data + ((self.tail - 1) & (self.capacity - 1)))[]
+
+    fn peekleft(self) -> ElementType:
+        """Inspect the first (leftmost) element of the deque without removing it.
+
+        Returns:
+            The the first (leftmost) element of the deque.
+        """
+        return (self.data + self.head)[]
 
     fn pop(inout self) raises -> ElementType:
         """Removes and returns the element from the right side of the deque.

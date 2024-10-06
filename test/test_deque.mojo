@@ -224,6 +224,28 @@ fn test_popleft() raises:
     assert_equal(q.capacity, 2)
 
 
+fn test_peek_peekleft() raises:
+    var q = Deque[Int](capacity=4)
+    assert_equal(q.capacity, 4)
+    q.extend(List(1, 2, 3))
+    assert_equal(q.peekleft(), 1)
+    assert_equal(q.peek(), 3)
+
+    _ = q.popleft()
+    assert_equal(q.peekleft(), 2)
+    assert_equal(q.peek(), 3)
+
+    q.append(4)
+    assert_equal(q.capacity, 4)
+    assert_equal(q.peekleft(), 2)
+    assert_equal(q.peek(), 4)
+
+    q.append(5)
+    assert_equal(q.capacity, 8)
+    assert_equal(q.peekleft(), 2)
+    assert_equal(q.peek(), 5)
+
+
 fn test_getitem() raises:
     var q = Deque(1, 2)
     assert_equal(q[0], 1)
