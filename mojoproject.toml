@@ -1,8 +1,8 @@
 [project]
 authors = ["Alvydas Vitkauskas <alvydas.vitkauskas@gmail.com>"]
 channels = ["conda-forge", "https://conda.modular.com/max-nightly"]
-description = "Double-ended queue (Deque) implementation"
-name = "deque"
+description = "Implementation of some data structures that are still missing in mojo"
+name = "datastructs"
 platforms = ["osx-arm64"]
 version = "0.1.0"
 
