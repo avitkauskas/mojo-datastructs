@@ -641,15 +641,18 @@ struct _DequeIter[ElementType: CollectionElement]:
         self.index = index
         self.src = src
 
-    fn __next__(
-        inout self,
-    ) -> ElementType:
+    fn __next__(inout self) -> ElementType:
         self.index += 1
         var offset = (self.src.head + self.index - 1) & (self.src.capacity - 1)
         return (self.src.data + offset)[]
 
+    @always_inline
     fn __len__(self) -> Int:
         return len(self.src) - self.index
+
+    @always_inline
+    fn __hasmore__(self) -> Bool:
+        return self.__len__() > 0
 
 
 fn _clip(value: Int, start: Int, end: Int) -> Int:
