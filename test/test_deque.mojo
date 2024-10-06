@@ -342,7 +342,7 @@ fn test_iter_list() raises:
     q.append(lst1)
     q.append(lst2)
     assert_equal(len(q), 2)
-    
+
     var i = 0
     for e in q:
         assert_equal(e, q[i])
@@ -403,25 +403,20 @@ fn test_move_list() raises:
 
 
 fn test_eq() raises:
-    var q = Deque[Int]()
-    var p = Deque[Int]()
-    
-    q.extend(List(1, 2, 3))
-    p.extend(List(1, 2, 3))
+    var q = Deque[Int](1, 2, 3)
+    var p = Deque[Int](1, 2, 3)
+
     assert_true(q == p)
 
+    var r = Deque[Int](0, 1, 2, 3)
     q.appendleft(0)
-    p.clear()
-    p.extend(List(0, 1, 2, 3))
-    assert_true(q == p)
+    assert_true(q == r)
 
 
 fn test_ne() raises:
-    var q = Deque[Int]()
-    var p = Deque[Int]()
-    
-    q.extend(List(1, 2, 3))
-    p.extend(List(3, 2, 1))
+    var q = Deque[Int](1, 2, 3)
+    var p = Deque[Int](3, 2, 1)
+
     assert_true(q != p)
 
     q.appendleft(0)
@@ -430,14 +425,14 @@ fn test_ne() raises:
 
 
 fn test_contains() raises:
-    var q = Deque[Int]()
-    q.extend(List(1, 2, 3))
+    var q = Deque[Int](1, 2, 3)
 
     assert_true(1 in q)
     assert_false(4 in q)
 
 
-# TODO: this test does not pass
+# TODO: this test does not pass for Deque
+# but it does not pass for List stdlib type either
 # fn test_contains_lists() raises:
 #     var q = Deque[List[Int]]()
 #     var lst1 = List(1, 2, 3)
@@ -448,6 +443,18 @@ fn test_contains() raises:
 
 #     assert_true(lst1 in q)
 #     assert_false(lst3 in q)
+
+
+fn test_str_repr() raises:
+    var q = Deque(1, 2, 3)
+
+    assert_equal(q.__str__(), "Deque(1, 2, 3)")
+    assert_equal(q.__repr__(), "Deque(1, 2, 3)")
+
+    var s = Deque("a", "b", "c")
+
+    assert_equal(s.__str__(), "Deque('a', 'b', 'c')")
+    assert_equal(s.__repr__(), "Deque('a', 'b', 'c')")
 
 
 fn test_len() raises:

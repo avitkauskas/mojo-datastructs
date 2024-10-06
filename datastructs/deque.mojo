@@ -69,12 +69,17 @@ struct Deque[ElementType: CollectionElement](
             maxlen: The maximum allowed capacity of the deque.
             shrinking: Should storage be dealocated when not needed.
         """
-        var deque_capacity = self.default_capacity if capacity <= 0 else bit_ceil(
-            capacity
-        )
-        var min_capacity = self.default_capacity if minlen <= 0 else bit_ceil(
-            minlen
-        )
+        var deque_capacity: Int
+        if capacity <= 0:
+            deque_capacity = self.default_capacity
+        else:
+            deque_capacity = bit_ceil(capacity)
+
+        var min_capacity: Int
+        if minlen <= 0:
+            min_capacity = self.default_capacity
+        else:
+            min_capacity = bit_ceil(minlen)
 
         if min_capacity > deque_capacity:
             deque_capacity = min_capacity
@@ -211,9 +216,7 @@ struct Deque[ElementType: CollectionElement](
 
     fn __contains__[
         EqualityElementType: EqualityComparableCollectionElement, //
-    ](
-        self: Deque[EqualityElementType], value: EqualityElementType
-    ) -> Bool:
+    ](self: Deque[EqualityElementType], value: EqualityElementType) -> Bool:
         """Verify if a given value is present in the deque.
 
         Parameters:
@@ -260,6 +263,86 @@ struct Deque[ElementType: CollectionElement](
             `False` if the deque is empty, `True` if there is at least one element.
         """
         return self.head != self.tail
+
+    @no_inline
+    fn __str__[
+        RepresentableElementType: RepresentableCollectionElement, //
+    ](self: Deque[RepresentableElementType]) -> String:
+        """Returns a string representation of a `Deque`.
+
+        Note that since we can't condition methods on a trait yet,
+        the way to call this method is a bit special. Here is an example below:
+
+        ```mojo
+        var my_list = Deque[Int](1, 2, 3)
+        print(my_list.__str__())
+        ```
+
+        When the compiler supports conditional methods, then a simple `str(my_list)` will
+        be enough.
+
+        The elements' type must implement the `__repr__()` method for this to work.
+
+        Parameters:
+            RepresentableElementType: The type of the elements in the deque.
+                Must implement the trait `RepresentableCollectionElement`.
+
+        Returns:
+            A string representation of the deque.
+        """
+        var output = String()
+        var writer = output._unsafe_to_formatter()
+        self.format_to(writer)
+        return output^
+
+    @no_inline
+    fn format_to[
+        RepresentableElementType: RepresentableCollectionElement, //
+    ](self: Deque[RepresentableElementType], inout writer: Formatter):
+        """Writes `my_list.__str__()` to a `Formatter`.
+
+        Parameters:
+            RepresentableElementType: The type of the Deque elements.
+                Must have the trait `RepresentableCollectionElement`.
+
+        Args:
+            writer: The formatter to write to.
+        """
+        writer.write("Deque(")
+        for i in range(len(self)):
+            offset = (self.head + i) & (self.capacity - 1)
+            writer.write(repr((self.data + offset)[]))
+            if i < len(self) - 1:
+                writer.write(", ")
+        writer.write(")")
+
+    @no_inline
+    fn __repr__[
+        RepresentableElementType: RepresentableCollectionElement, //
+    ](self: Deque[RepresentableElementType]) -> String:
+        """Returns a string representation of a `Deque`.
+
+        Note that since we can't condition methods on a trait yet,
+        the way to call this method is a bit special. Here is an example below:
+
+        ```mojo
+        var my_list = Deque[Int](1, 2, 3)
+        print(my_list.__repr__())
+        ```
+
+        When the compiler supports conditional methods, then a simple `repr(my_list)` will
+        be enough.
+
+        The elements' type must implement the `__repr__()` for this to work.
+
+        Parameters:
+            RepresentableElementType: The type of the elements in the deque.
+                Must implement the trait `RepresentableCollectionElement`.
+
+        Returns:
+            A string representation of the deque.
+        """
+        return self.__str__()
 
     # ===-------------------------------------------------------------------===#
     # Methods
