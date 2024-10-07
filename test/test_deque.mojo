@@ -252,10 +252,6 @@ fn test_getitem() raises:
     assert_equal(q[1], 2)
     assert_equal(q[-1], 2)
     assert_equal(q[-2], 1)
-    with assert_raises():
-        _ = q[2]
-    with assert_raises():
-        _ = q[-3]
 
 
 fn test_setitem() raises:
@@ -267,11 +263,6 @@ fn test_setitem() raises:
 
     q[-1] = 4
     assert_equal(q[1], 4)
-
-    with assert_raises():
-        q[2] = 5
-    with assert_raises():
-        q[-3] = 5
 
 
 fn test_clear() raises:
@@ -352,9 +343,15 @@ fn test_iter() raises:
 
     var i = 0
     for e in q:
-        assert_equal(e, q[i])
+        assert_equal(e[], q[i])
         i += 1
     assert_equal(i, len(q))
+
+    for e in q:
+        if e[] == 1:
+            e[] = 4
+            assert_equal(e[], 4)
+    assert_equal(q[0], 4)
 
 
 fn test_iter_list() raises:
@@ -367,15 +364,32 @@ fn test_iter_list() raises:
 
     var i = 0
     for e in q:
-        assert_equal(e, q[i])
+        assert_equal(e[], q[i])
         i += 1
     assert_equal(i, len(q))
 
     for e in q:
-        if e == lst1:
-            e[0] = 7
-            assert_equal(e, List(7, 2, 3))
-    assert_equal(q[0], List(1, 2, 3))
+        if e[] == lst1:
+            e[][0] = 7
+            assert_equal(e[], List(7, 2, 3))
+    assert_equal(q[0], List(7, 2, 3))
+
+    for e in q:
+        if e[] == lst2:
+            e[] = List(1, 2, 3)
+            assert_equal(e[], List(1, 2, 3))
+    assert_equal(q[1], List(1, 2, 3))
+
+
+fn test_reversed_iter() raises:
+    var q = Deque(1, 2, 3)
+
+    var i = 0
+    # change to reversed(q) when implemented in builtin for Deque
+    for e in q.__reversed__():
+        i -= 1
+        assert_equal(e[], q[i])
+    assert_equal(-i, len(q))
 
 
 fn test_copy_trivial() raises:

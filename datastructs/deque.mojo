@@ -234,10 +234,23 @@ struct Deque[ElementType: CollectionElement](
 
     fn __iter__(
         ref [_]self,
-    ) -> _DequeIter[ElementType]:
-        """Iterates over elements of the deque, returning copies of the elements.
+    ) -> _DequeIter[ElementType, __lifetime_of(self)]:
+        """Iterates over elements of the deque, returning immutable references.
+
+        Returns:
+            An iterator of immutable references to the deque elements.
         """
-        return _DequeIter[ElementType](0, self)
+        return _DequeIter(0, Pointer.address_of(self))
+
+    fn __reversed__(
+        ref [_]self,
+    ) -> _DequeIter[ElementType, __lifetime_of(self), False]:
+        """Iterate backwards over the deque, returning immutable references.
+
+        Returns:
+            A reversed iterator of immutable references to the deque elements.
+        """
+        return _DequeIter[forward=False](len(self), Pointer.address_of(self))
 
     # ===-------------------------------------------------------------------===#
     # Trait implementations
@@ -347,7 +360,7 @@ struct Deque[ElementType: CollectionElement](
 
     fn __getitem__(
         ref [_]self, idx: Int
-    ) raises -> ref [__lifetime_of(self)] ElementType:
+    ) -> ref [__lifetime_of(self)] ElementType:
         """Gets the deque element at the given index.
 
         Args:
@@ -355,16 +368,19 @@ struct Deque[ElementType: CollectionElement](
 
         Returns:
             A reference to the element at the given index.
-
-        Raises:
-            IndexError: If the `idx` is out of bounds.
         """
         var normalized_idx = idx
+
+        debug_assert(
+            -len(self) <= normalized_idx < len(self),
+            "index: ",
+            normalized_idx,
+            " is out of bounds for `Deque` of size: ",
+            len(self),
+        )
+
         if normalized_idx < 0:
             normalized_idx += len(self)
-
-        if not 0 <= normalized_idx < len(self):
-            raise "IndexError: Index out of range"
 
         var offset = (self.head + normalized_idx) & (self.capacity - 1)
         return (self.data + offset)[]
@@ -631,24 +647,45 @@ struct Deque[ElementType: CollectionElement](
         self.capacity = new_capacity
 
 
-struct _DequeIter[ElementType: CollectionElement]:
-    """Iterator for Deque."""
+@value
+struct _DequeIter[
+    deque_mutability: Bool, //,
+    ElementType: CollectionElement,
+    deque_lifetime: Lifetime[deque_mutability].type,
+    forward: Bool = True,
+]:
+    """Iterator for Deque.
+
+    Parameters:
+        deque_mutability: Whether the reference to the deque is mutable.
+        ElementType: The type of the elements in the deque.
+        deque_lifetime: The lifetime of the Deque.
+        forward: The iteration direction. `False` is backwards.
+    """
+
+    alias deque_type = Deque[ElementType]
 
     var index: Int
-    var src: Deque[ElementType]
+    var src: Pointer[Self.deque_type, deque_lifetime]
 
-    fn __init__(inout self, index: Int, ref [_]src: Deque[ElementType]):
-        self.index = index
-        self.src = src
+    fn __iter__(self) -> Self:
+        return self
 
-    fn __next__(inout self) -> ElementType:
-        self.index += 1
-        var offset = (self.src.head + self.index - 1) & (self.src.capacity - 1)
-        return (self.src.data + offset)[]
+    fn __next__(inout self) -> Pointer[ElementType, deque_lifetime]:
+        @parameter
+        if forward:
+            self.index += 1
+            return Pointer.address_of(self.src[][self.index - 1])
+        else:
+            self.index -= 1
+            return Pointer.address_of(self.src[][self.index])
 
-    @always_inline
     fn __len__(self) -> Int:
-        return len(self.src) - self.index
+        @parameter
+        if forward:
+            return len(self.src[]) - self.index
+        else:
+            return self.index
 
     @always_inline
     fn __hasmore__(self) -> Bool:

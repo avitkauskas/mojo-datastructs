@@ -7,7 +7,7 @@ environments:
     packages:
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.4.3-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/aiohttp-3.10.8-py312h024a12e_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/aiohttp-3.10.9-py312h024a12e_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiosignal-1.3.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/annotated-types-0.7.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-4.6.0-pyhd8ed1ab_1.conda
@@ -194,12 +194,12 @@ packages:
   timestamp: 1727779893392
 - kind: conda
   name: aiohttp
-  version: 3.10.8
+  version: 3.10.9
   build: py312h024a12e_0
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/aiohttp-3.10.8-py312h024a12e_0.conda
-  sha256: 4a0e548f6e347cd94af68ad9a093903683519132013480200f99ec135b11481b
-  md5: b8228160bd0b70341265005eeb720abc
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/aiohttp-3.10.9-py312h024a12e_0.conda
+  sha256: 55c70d802535302621043a96448a47df0dd89b6493eea383882c70ddea88e47e
+  md5: 730cd266f3edfb5113e741bb498bcdcc
   depends:
   - __osx >=11.0
   - aiohappyeyeballs >=2.3.0
@@ -213,8 +213,8 @@ packages:
   - yarl >=1.12.0,<2.0
   license: MIT AND Apache-2.0
   license_family: Apache
-  size: 807068
-  timestamp: 1727635280572
+  size: 809125
+  timestamp: 1728326501193
 - kind: conda
   name: aiosignal
   version: 1.3.1
