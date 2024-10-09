@@ -2,34 +2,92 @@ from testing import assert_equal, assert_false, assert_true, assert_raises
 
 from datastructs import Deque
 
+# ===----------------------------------------------------------------------===#
+# Implementation tests
+# ===----------------------------------------------------------------------===#
 
-fn test_init_default_empty() raises:
+fn test_impl_init_default() raises:
     var q = Deque[Int]()
 
     assert_equal(q.capacity, q.default_capacity)
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 0)
     assert_equal(q.minlen, q.default_capacity)
     assert_equal(q.maxlen, -1)
-
-
-fn test_init_minlen_empty() raises:
-    var q = Deque[Int](minlen=2)
-
-    assert_equal(q.capacity, q.default_capacity)
     assert_equal(q.head, 0)
     assert_equal(q.tail, 0)
-    assert_equal(q.minlen, 2)
+    assert_true(q.shrinking)
+
+fn test_impl_init_capacity() raises:
+    var q: Deque[Int]
+
+    q = Deque[Int](capacity=-10)
+    assert_equal(q.capacity, q.default_capacity)
+    assert_equal(q.minlen, q.default_capacity)
+
+    q = Deque[Int](capacity=0)
+    assert_equal(q.capacity, q.default_capacity)
+    assert_equal(q.minlen, q.default_capacity)
+
+    q = Deque[Int](capacity=10)
+    assert_equal(q.capacity, 16)
+    assert_equal(q.minlen, q.default_capacity)
+
+    q = Deque[Int](capacity=100)
+    assert_equal(q.capacity, 128)
+    assert_equal(q.minlen, q.default_capacity)
+
+
+fn test_impl_init_minlen() raises:
+    var q: Deque[Int]
+
+    q = Deque[Int](minlen=-10)
+    assert_equal(q.minlen, q.default_capacity)
+    assert_equal(q.capacity, q.default_capacity)
+
+    q = Deque[Int](minlen=0)
+    assert_equal(q.minlen, q.default_capacity)
+    assert_equal(q.capacity, q.default_capacity)
+
+    q = Deque[Int](minlen=10)
+    assert_equal(q.minlen, 16)
+    assert_equal(q.capacity, q.default_capacity)
+
+    q = Deque[Int](minlen=100)
+    assert_equal(q.minlen, 128)
+    assert_equal(q.capacity, q.default_capacity)
+
+
+fn test_impl_init_maxlen() raises:
+    var q: Deque[Int]
+
+    q = Deque[Int](maxlen=-10)
     assert_equal(q.maxlen, -1)
+    assert_equal(q.capacity, q.default_capacity)
+
+    q = Deque[Int](maxlen=0)
+    assert_equal(q.maxlen, -1)
+    assert_equal(q.capacity, q.default_capacity)
+
+    q = Deque[Int](maxlen=10)
+    assert_equal(q.maxlen, 10)
+    assert_equal(q.capacity, 16)
+
+    q = Deque[Int](maxlen=100)
+    assert_equal(q.maxlen, 100)
+    assert_equal(q.capacity, q.default_capacity)
 
 
-fn test_init_variadic() raises:
+fn test_impl_init_variadic() raises:
     var q = Deque(0, 1, 2)
-    assert_equal(q[0], 0)
-    assert_equal(q[2], 2)
+
+    assert_equal(q.head, 0)
+    assert_equal(q.tail, 3)
+    assert_equal((q.data + 0)[], 0)
+    assert_equal((q.data + 1)[], 1)
+    assert_equal((q.data + 2)[], 2)
 
 
-fn test_init_variadic_list() raises:
+# TODO: redo cheching move/copy
+fn test_impl_init_variadic_list() raises:
     lst1 = List(0, 1)
     lst2 = List(2, 3)
 
@@ -45,45 +103,70 @@ fn test_init_variadic_list() raises:
     assert_equal(p[1], List(2, 3))
 
 
-fn test_append_no_realloc() raises:
+fn test_impl_len() raises:
     var q = Deque[Int]()
 
-    q.append(1)
-    assert_equal(len(q), 1)
+    q.head = 0
+    q.tail = 10
+    assert_equal(len(q), 10)
+
+    q.head = q.default_capacity - 5
+    q.tail = 5
+    assert_equal(len(q), 10)
+
+
+fn test_impl_bool() raises:
+    var q = Deque[Int]()
+    assert_false(q)
+
+    q.tail = 1
+    assert_true(q)
+
+
+fn test_impl_append() raises:
+    var q = Deque[Int](capacity=2)
+
+    q.append(0)
     assert_equal(q.head, 0)
     assert_equal(q.tail, 1)
-    assert_equal(q.capacity, q.default_capacity)
-    assert_equal(q[0], 1)
-
-    q.append(2)
-    assert_equal(len(q), 2)
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 2)
-    assert_equal(q[1], 2)
-
-
-fn test_append_with_realloc() raises:
-    var q = Deque[Int](capacity=2, minlen=2)
+    assert_equal(q.capacity, 2)
+    assert_equal((q.data + 0)[], 0)
 
     q.append(1)
-    assert_equal(q.capacity, 2)
-    assert_equal(q[0], 1)
+    assert_equal(q.head, 0)
+    assert_equal(q.tail, 2)
+    assert_equal(q.capacity, 4)
+    assert_equal((q.data + 0)[], 0)
+    assert_equal((q.data + 1)[], 1)
 
     q.append(2)
+    assert_equal(q.head, 0)
+    assert_equal(q.tail, 3)
     assert_equal(q.capacity, 4)
-    assert_equal(len(q), 2)
-    assert_equal(q[0], 1)
-    assert_equal(q[1], 2)
+    assert_equal((q.data + 0)[], 0)
+    assert_equal((q.data + 1)[], 1)
+    assert_equal((q.data + 2)[], 2)
 
+    # simulate popleft()
+    q.head += 1
     q.append(3)
+    assert_equal(q.head, 1)
+    # tail wrapped to the front
+    assert_equal(q.tail, 0)
     assert_equal(q.capacity, 4)
-    assert_equal(len(q), 3)
-    assert_equal(q[2], 3)
+    assert_equal((q.data + 1)[], 1)
+    assert_equal((q.data + 2)[], 2)
+    assert_equal((q.data + 3)[], 3)
 
     q.append(4)
+    # re-allocated buffer and moved all elements
+    assert_equal(q.head, 0)
+    assert_equal(q.tail, 4)
     assert_equal(q.capacity, 8)
-    assert_equal(len(q), 4)
-    assert_equal(q[3], 4)
+    assert_equal((q.data + 0)[], 1)
+    assert_equal((q.data + 1)[], 2)
+    assert_equal((q.data + 2)[], 3)
+    assert_equal((q.data + 3)[], 4)
 
 
 fn test_append_with_maxlen() raises:
@@ -491,19 +574,3 @@ fn test_str_repr() raises:
 
     assert_equal(s.__str__(), "Deque('a', 'b', 'c')")
     assert_equal(s.__repr__(), "Deque('a', 'b', 'c')")
-
-
-fn test_len() raises:
-    var q = Deque[Int]()
-    assert_equal(len(q), 0)
-
-    q.append(1)
-    assert_equal(len(q), 1)
-
-
-fn test_bool() raises:
-    var q = Deque[Int]()
-    assert_false(q)
-
-    q.append(1)
-    assert_true(q)

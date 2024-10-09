@@ -81,7 +81,11 @@ struct Deque[ElementType: CollectionElement](
         else:
             min_capacity = bit_ceil(minlen)
 
-        if maxlen >= 0:
+        var max_capacity: Int
+        if maxlen <= 0:
+            max_capacity = -1
+        else:
+            max_capacity = maxlen
             deque_capacity = min(deque_capacity, bit_ceil(maxlen))
 
         self.capacity = deque_capacity
@@ -89,7 +93,7 @@ struct Deque[ElementType: CollectionElement](
         self.head = 0
         self.tail = 0
         self.minlen = min_capacity
-        self.maxlen = maxlen
+        self.maxlen = max_capacity
         self.shrinking = shrinking
 
     fn __init__(inout self, owned *values: ElementType):
