@@ -7,7 +7,7 @@ environments:
     packages:
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiohappyeyeballs-2.4.3-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/aiohttp-3.10.9-py312h024a12e_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/aiohttp-3.10.9-py312ha0ccf2a_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiosignal-1.3.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/annotated-types-0.7.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-4.6.0-pyhd8ed1ab_1.conda
@@ -167,7 +167,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/sse-starlette-2.1.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/starlette-0.38.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tk-8.6.13-h5083fa2_1.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tokenizers-0.20.0-py312h12757c6_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tokenizers-0.20.1-py312hd6eb99f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tornado-6.4.1-py312h024a12e_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.66.5-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
@@ -208,11 +208,12 @@ packages:
 - kind: conda
   name: aiohttp
   version: 3.10.9
-  build: py312h024a12e_0
+  build: py312ha0ccf2a_1
+  build_number: 1
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/aiohttp-3.10.9-py312h024a12e_0.conda
-  sha256: 55c70d802535302621043a96448a47df0dd89b6493eea383882c70ddea88e47e
-  md5: 730cd266f3edfb5113e741bb498bcdcc
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/aiohttp-3.10.9-py312ha0ccf2a_1.conda
+  sha256: 636caa6321fafaff4741761cfa142cdf07ef61851b475aff87868c47e47d8c3b
+  md5: ac5d5baae3b22b0c3eae904b90ee7956
   depends:
   - __osx >=11.0
   - aiohappyeyeballs >=2.3.0
@@ -226,8 +227,8 @@ packages:
   - yarl >=1.12.0,<2.0
   license: MIT AND Apache-2.0
   license_family: Apache
-  size: 809125
-  timestamp: 1728326501193
+  size: 809421
+  timestamp: 1728586534709
 - kind: conda
   name: aiosignal
   version: 1.3.1
@@ -1966,6 +1967,7 @@ packages:
   constrains:
   - openmp 19.1.1|19.1.1.*
   license: Apache-2.0 WITH LLVM-exception
+  license_family: APACHE
   size: 280398
   timestamp: 1728517150988
 - kind: conda
@@ -2435,6 +2437,7 @@ packages:
   - python >=3.12,<3.13.0a0 *_cpython
   - python_abi 3.12.* *_cp312
   license: Apache-2.0
+  license_family: APACHE
   size: 47796
   timestamp: 1728545963127
 - kind: conda
@@ -3016,16 +3019,16 @@ packages:
   timestamp: 1699202432999
 - kind: conda
   name: tokenizers
-  version: 0.20.0
-  build: py312h12757c6_0
+  version: 0.20.1
+  build: py312hd6eb99f_0
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/tokenizers-0.20.0-py312h12757c6_0.conda
-  sha256: c07431f220a384891ea95db7ddba57448a8104faff5dcbc142690b41f52bd144
-  md5: ae12ebb4009d3dc781ef44c6688eef6e
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/tokenizers-0.20.1-py312hd6eb99f_0.conda
+  sha256: d969b688896caf8e8909d8f454268052624f2cf46504dc8bc3ddd9338c6b99a6
+  md5: 530119ab40068bd198688f38f8abafa6
   depends:
   - __osx >=11.0
   - huggingface_hub >=0.16.4,<1.0
-  - libcxx >=16
+  - libcxx >=17
   - python >=3.12,<3.13.0a0
   - python >=3.12,<3.13.0a0 *_cpython
   - python_abi 3.12.* *_cp312
@@ -3033,8 +3036,8 @@ packages:
   - __osx >=11.0
   license: Apache-2.0
   license_family: APACHE
-  size: 1901499
-  timestamp: 1723431528309
+  size: 1930339
+  timestamp: 1728589077546
 - kind: conda
   name: tornado
   version: 6.4.1

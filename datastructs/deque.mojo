@@ -15,7 +15,9 @@ from memory import UnsafePointer, Reference
 # ===----------------------------------------------------------------------===#
 
 
-struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
+struct Deque[ElementType: CollectionElement](
+    Movable, ExplicitlyCopyable, Sized, Boolable
+):
     """Implements a double-ended queue.
 
     It supports pushing and popping from both ends in O(1) time resizing the
@@ -118,12 +120,16 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         Args:
             variadic_list: The values to populate the deque with.
         """
-        length = len(variadic_list)
-        capacity = self.default_capacity if length < self.default_capacity else length
+        args_length = len(variadic_list)
+
+        if args_length < self.default_capacity:
+            capacity = self.default_capacity
+        else:
+            capacity = args_length
 
         self = Self(capacity=capacity)
 
-        for i in range(length):
+        for i in range(args_length):
             src = UnsafePointer.address_of(variadic_list[i])
             dst = self.data + i
             src.move_pointee_into(dst)
@@ -131,7 +137,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         # Mark the elements as unowned to avoid del'ing uninitialized objects.
         variadic_list._is_owned = False
 
-        self.tail = length
+        self.tail = args_length
 
     fn __init__(inout self, other: Self):
         """Creates a deepcopy of the given deque.
@@ -245,20 +251,20 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
     fn __iter__(
         ref [_]self,
     ) -> _DequeIter[ElementType, __lifetime_of(self)]:
-        """Iterates over elements of the deque, returning immutable references.
+        """Iterates over elements of the deque, returning the references.
 
         Returns:
-            An iterator of immutable references to the deque elements.
+            An iterator of the references to the deque elements.
         """
         return _DequeIter(0, Pointer.address_of(self))
 
     fn __reversed__(
         ref [_]self,
     ) -> _DequeIter[ElementType, __lifetime_of(self), False]:
-        """Iterate backwards over the deque, returning immutable references.
+        """Iterate backwards over the deque, returning the references.
 
         Returns:
-            A reversed iterator of immutable references to the deque elements.
+            A reversed iterator of the references to the deque elements.
         """
         return _DequeIter[forward=False](len(self), Pointer.address_of(self))
 
@@ -611,7 +617,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
 
         return (self.data + self.head)[]
 
-    fn pop(inout self) raises -> ElementType:
+    fn pop(inout self) raises -> ElementType as element:
         """Removes and returns the element from the right side of the deque.
 
         Returns:
@@ -624,7 +630,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
             raise "IndexError: Deque is empty"
 
         self.tail = (self.tail - 1) & (self.capacity - 1)
-        result = (self.data + self.tail).take_pointee()
+        element = (self.data + self.tail).take_pointee()
 
         if (
             self.shrinking
@@ -633,9 +639,9 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         ):
             self._realloc(self.capacity >> 1)
 
-        return result
+        return
 
-    fn popleft(inout self) raises -> ElementType:
+    fn popleft(inout self) raises -> ElementType as element:
         """Removes and returns the element from the left side of the deque.
 
         Returns:
@@ -647,7 +653,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         if self.head == self.tail:
             raise "IndexError: Deque is empty"
 
-        result = (self.data + self.head).take_pointee()
+        element = (self.data + self.head).take_pointee()
         self.head = (self.head + 1) & (self.capacity - 1)
 
         if (
@@ -657,7 +663,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         ):
             self._realloc(self.capacity >> 1)
 
-        return result
+        return
 
     fn reverse(inout self):
         """Reverses the elements of the deque in-place."""
