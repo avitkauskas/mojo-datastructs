@@ -1,6 +1,6 @@
 # Some missing data structures for mojo
 
-> Tested on the Mojo nightly build `mojo 2024.10.905 (3391b2db)`
+> Tested on the Mojo nightly build `mojo 2024.10.1005 (512c2f1c)`
 
 ## Deque (double-ended queue)
 

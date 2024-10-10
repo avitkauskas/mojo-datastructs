@@ -371,7 +371,7 @@ fn test_impl_init_variadic_list() raises:
 fn test_copy_trivial() raises:
     var q = Deque(1, 2, 3)
 
-    var p = q
+    var p = Deque(q)
     assert_equal(p[0], q[0])
 
     p[0] = 3
@@ -390,7 +390,7 @@ fn test_copy_list() raises:
     lst1[0] = 7
     assert_equal(q[0], List(1, 2, 3))
 
-    var p = q
+    var p = Deque(q)
     assert_equal(p[0], q[0])
 
     p[0][0] = 7
@@ -491,6 +491,12 @@ fn test_index() raises:
 fn test_peek_and_peekleft() raises:
     var q = Deque[Int](capacity=4)
     assert_equal(q.capacity, 4)
+
+    with assert_raises():
+        _ = q.peek()
+    with assert_raises():
+        _ = q.peekleft()
+
     q.extend(List(1, 2, 3))
     assert_equal(q.peekleft(), 1)
     assert_equal(q.peek(), 3)

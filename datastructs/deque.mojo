@@ -16,22 +16,29 @@ from memory import UnsafePointer, Reference
 
 
 struct Deque[ElementType: CollectionElement](
-    CollectionElement, Sized, Boolable
+    Movable, Sized, Boolable
 ):
-    """The `Deque` type is a double-ended queue.
+    """Implements a double-ended queue.
 
     It supports pushing and popping from both ends in O(1) time resizing the
-    underlying storage as needed.  When it is deallocated, it frees its memory.
+    underlying storage as needed.
 
     Parameters:
         ElementType: The type of the elements in the deque.
             Must implement the trait `CollectionElement`.
     """
 
+    # ===-------------------------------------------------------------------===#
+    # Aliases
+    # ===-------------------------------------------------------------------===#
+
     alias default_capacity: Int = 64
     """The default capacity of the deque: must be the power of 2."""
 
+    # ===-------------------------------------------------------------------===#
     # Fields
+    # ===-------------------------------------------------------------------===#
+
     var data: UnsafePointer[ElementType]
     """The underlying storage for the deque."""
 
@@ -51,7 +58,7 @@ struct Deque[ElementType: CollectionElement](
     """The maximum allowed capacity in the number of elements of the deque."""
 
     var shrinking: Bool
-    """The flag defining if the deque storage is reallocated to make it smaller when possible."""
+    """The flag defining if the deque storage is re-allocated to make it smaller when possible."""
 
     # ===-------------------------------------------------------------------===#
     # Life cycle methods
@@ -69,9 +76,9 @@ struct Deque[ElementType: CollectionElement](
 
         Args:
             capacity: The initial capacity of the deque.
-            minlen: The minimum allowed capacity of the deque.
-            maxlen: The maximum allowed capacity of the deque.
-            shrinking: Should storage be dealocated when not needed.
+            minlen: The minimum allowed capacity of the deque when shrinking.
+            maxlen: The maximum allowed capacity of the deque when growing.
+            shrinking: Should storage be de-allocated when not needed.
         """
         var deque_capacity: Int
         if capacity <= 0:
@@ -131,23 +138,23 @@ struct Deque[ElementType: CollectionElement](
 
         self.tail = length
 
-    fn __copyinit__(inout self, existing: Self):
+    fn __init__(inout self, other: Self):
         """Creates a deepcopy of the given deque.
 
         Args:
-            existing: The deque to copy.
+            other: The deque to copy.
         """
         self = Self(
-            capacity=existing.capacity,
-            minlen=existing.minlen,
-            maxlen=existing.maxlen,
-            shrinking=existing.shrinking,
+            capacity=other.capacity,
+            minlen=other.minlen,
+            maxlen=other.maxlen,
+            shrinking=other.shrinking,
         )
-        for i in range(len(existing)):
-            var offset = (existing.head + i) & (existing.capacity - 1)
-            (self.data + i).init_pointee_copy((existing.data + offset)[])
+        for i in range(len(other)):
+            var offset = (other.head + i) & (other.capacity - 1)
+            (self.data + i).init_pointee_copy((other.data + offset)[])
 
-        self.tail = len(existing)
+        self.tail = len(other)
 
     fn __moveinit__(inout self, owned existing: Self):
         """Moves data of an existing deque into a new one.
@@ -282,6 +289,33 @@ struct Deque[ElementType: CollectionElement](
         """
         return (self.tail - self.head) & (self.capacity - 1)
 
+    fn __getitem__(
+        ref [_]self, idx: Int
+    ) -> ref [__lifetime_of(self)] ElementType:
+        """Gets the deque element at the given index.
+
+        Args:
+            idx: The index of the element.
+
+        Returns:
+            A reference to the element at the given index.
+        """
+        var normalized_idx = idx
+
+        debug_assert(
+            -len(self) <= normalized_idx < len(self),
+            "index: ",
+            normalized_idx,
+            " is out of bounds for `Deque` of size: ",
+            len(self),
+        )
+
+        if normalized_idx < 0:
+            normalized_idx += len(self)
+
+        var offset = (self.head + normalized_idx) & (self.capacity - 1)
+        return (self.data + offset)[]
+
     @no_inline
     fn format_to[
         RepresentableElementType: RepresentableCollectionElement, //
@@ -365,33 +399,6 @@ struct Deque[ElementType: CollectionElement](
     # ===-------------------------------------------------------------------===#
     # Methods
     # ===-------------------------------------------------------------------===#
-
-    fn __getitem__(
-        ref [_]self, idx: Int
-    ) -> ref [__lifetime_of(self)] ElementType:
-        """Gets the deque element at the given index.
-
-        Args:
-            idx: The index of the element.
-
-        Returns:
-            A reference to the element at the given index.
-        """
-        var normalized_idx = idx
-
-        debug_assert(
-            -len(self) <= normalized_idx < len(self),
-            "index: ",
-            normalized_idx,
-            " is out of bounds for `Deque` of size: ",
-            len(self),
-        )
-
-        if normalized_idx < 0:
-            normalized_idx += len(self)
-
-        var offset = (self.head + normalized_idx) & (self.capacity - 1)
-        return (self.data + offset)[]
 
     fn append(inout self, owned value: ElementType):
         """Appends a value to the right side of the deque.
@@ -531,20 +538,32 @@ struct Deque[ElementType: CollectionElement](
                 return i
         raise "ValueError: Given element is not in deque"
 
-    fn peek(self) -> ElementType:
+    fn peek(self) raises -> ElementType:
         """Inspect the last (rightmost) element of the deque without removing it.
 
         Returns:
             The the last (rightmost) element of the deque.
+
+        Raises:
+            IndexError: If the deque is empty.
         """
+        if self.head == self.tail:
+            raise "IndexError: Deque is empty"
+
         return (self.data + ((self.tail - 1) & (self.capacity - 1)))[]
 
-    fn peekleft(self) -> ElementType:
+    fn peekleft(self) raises -> ElementType:
         """Inspect the first (leftmost) element of the deque without removing it.
 
         Returns:
             The the first (leftmost) element of the deque.
+
+        Raises:
+            IndexError: If the deque is empty.
         """
+        if self.head == self.tail:
+            raise "IndexError: Deque is empty"
+
         return (self.data + self.head)[]
 
     fn pop(inout self) raises -> ElementType:
