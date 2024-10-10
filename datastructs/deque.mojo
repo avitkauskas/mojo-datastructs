@@ -78,19 +78,16 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
             maxlen: The maximum allowed capacity of the deque when growing.
             shrinking: Should storage be de-allocated when not needed.
         """
-        var deque_capacity: Int
         if capacity <= 0:
             deque_capacity = self.default_capacity
         else:
             deque_capacity = bit_ceil(capacity)
 
-        var min_capacity: Int
         if minlen <= 0:
             min_capacity = self.default_capacity
         else:
             min_capacity = bit_ceil(minlen)
 
-        var max_capacity: Int
         if maxlen <= 0:
             max_capacity = -1
         else:
@@ -121,14 +118,14 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         Args:
             variadic_list: The values to populate the deque with.
         """
-        var length = len(variadic_list)
-        var capacity = self.default_capacity if length < self.default_capacity else length
+        length = len(variadic_list)
+        capacity = self.default_capacity if length < self.default_capacity else length
 
         self = Self(capacity=capacity)
 
         for i in range(length):
-            var src = UnsafePointer.address_of(variadic_list[i])
-            var dst = self.data + i
+            src = UnsafePointer.address_of(variadic_list[i])
+            dst = self.data + i
             src.move_pointee_into(dst)
 
         # Mark the elements as unowned to avoid del'ing uninitialized objects.
@@ -149,7 +146,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
             shrinking=other.shrinking,
         )
         for i in range(len(other)):
-            var offset = (other.head + i) & (other.capacity - 1)
+            offset = (other.head + i) & (other.capacity - 1)
             (self.data + i).init_pointee_copy((other.data + offset)[])
 
         self.tail = len(other)
@@ -171,7 +168,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
     fn __del__(owned self):
         """Destroys all elements in the deque and free its memory."""
         for i in range(len(self)):
-            var offset = (self.head + i) & (self.capacity - 1)
+            offset = (self.head + i) & (self.capacity - 1)
             (self.data + offset).destroy_pointee()
         self.data.free()
 
@@ -240,7 +237,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
             True if the value is contained in the deque, False otherwise.
         """
         for i in range(len(self)):
-            var offset = (self.head + i) & (self.capacity - 1)
+            offset = (self.head + i) & (self.capacity - 1)
             if (self.data + offset)[] == value:
                 return True
         return False
@@ -298,7 +295,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         Returns:
             A reference to the element at the given index.
         """
-        var normalized_idx = idx
+        normalized_idx = idx
 
         debug_assert(
             -len(self) <= normalized_idx < len(self),
@@ -311,7 +308,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         if normalized_idx < 0:
             normalized_idx += len(self)
 
-        var offset = (self.head + normalized_idx) & (self.capacity - 1)
+        offset = (self.head + normalized_idx) & (self.capacity - 1)
         return (self.data + offset)[]
 
     @no_inline
@@ -345,7 +342,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         the way to call this method is a bit special. Here is an example below:
 
         ```mojo
-        var my_deque = Deque[Int](1, 2, 3)
+        my_deque = Deque[Int](1, 2, 3)
         print(my_deque.__str__())
         ```
 
@@ -361,8 +358,8 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         Returns:
             A string representation of the deque.
         """
-        var output = String()
-        var writer = output._unsafe_to_formatter()
+        output = String()
+        writer = output._unsafe_to_formatter()
         self.format_to(writer)
         return output^
 
@@ -376,7 +373,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         the way to call this method is a bit special. Here is an example below:
 
         ```mojo
-        var my_deque = Deque[Int](1, 2, 3)
+        my_deque = Deque[Int](1, 2, 3)
         print(my_deque.__repr__())
         ```
 
@@ -436,7 +433,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         Resets the underlying storage capacity to `minlen`.
         """
         for i in range(len(self)):
-            var offset = (self.head + i) & (self.capacity - 1)
+            offset = (self.head + i) & (self.capacity - 1)
             (self.data + offset).destroy_pointee()
         self.data.free()
         self.capacity = self.minlen
@@ -459,9 +456,9 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         Returns:
             The number of occurrences of the value in the deque.
         """
-        var count = 0
+        count = 0
         for i in range(len(self)):
-            var offset = (self.head + i) & (self.capacity - 1)
+            offset = (self.head + i) & (self.capacity - 1)
             if (self.data + offset)[] == value:
                 count += 1
         return count
@@ -514,9 +511,8 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         Raises:
             ValueError: If the value is not found in the deque.
         """
-        var start_normalized = start
+        start_normalized = start
 
-        var stop_normalized: Int
         if stop is None:
             stop_normalized = len(self)
         else:
@@ -531,7 +527,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         stop_normalized = _clip(stop_normalized, 0, len(self))
 
         for i in range(start_normalized, stop_normalized):
-            var offset = (self.head + i) & (self.capacity - 1)
+            offset = (self.head + i) & (self.capacity - 1)
             if (self.data + offset)[] == value:
                 return i
         raise "ValueError: Given element is not in deque"
@@ -551,7 +547,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
         if self.maxlen > 0 and deque_len + 1 > self.maxlen:
             raise "IndexError: Deque is already at its maximum size"
 
-        var normalized_idx = idx
+        normalized_idx = idx
 
         if normalized_idx < -deque_len:
             normalized_idx = 0
@@ -628,7 +624,7 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
             raise "IndexError: Deque is empty"
 
         self.tail = (self.tail - 1) & (self.capacity - 1)
-        var result = (self.data + self.tail).take_pointee()
+        result = (self.data + self.tail).take_pointee()
 
         if (
             self.shrinking
@@ -665,11 +661,11 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
 
     fn reverse(inout self):
         """Reverses the elements of the deque in-place."""
-        var last = self.head + len(self) - 1
+        last = self.head + len(self) - 1
         for i in range(len(self) // 2):
-            var src = (self.head + i) & (self.capacity - 1)
-            var dst = (last - i) & (self.capacity - 1)
-            var tmp = (self.data + dst).take_pointee()
+            src = (self.head + i) & (self.capacity - 1)
+            dst = (last - i) & (self.capacity - 1)
+            tmp = (self.data + dst).take_pointee()
             (self.data + src).move_pointee_into(self.data + dst)
             (self.data + src).init_pointee_move(tmp^)
 
@@ -695,21 +691,24 @@ struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
                 (self.data + self.tail).move_pointee_into(self.data + self.head)
 
     fn _realloc(inout self, new_capacity: Int):
-        """Relocates data to a new storage buffer of the size of `new_capacity`.
-        """
-        var deque_len = len(self) if self else self.capacity
+        """Relocates data to a new storage buffer.
 
-        var tail_len = self.tail
-        var head_len = self.capacity - self.head
+        Args:
+            new_capacity: The new capacity of the buffer.
+        """
+        deque_len = len(self) if self else self.capacity
+
+        tail_len = self.tail
+        head_len = self.capacity - self.head
 
         if head_len > deque_len:
             head_len = deque_len
             tail_len = 0
 
-        var new_data = UnsafePointer[ElementType].alloc(new_capacity)
+        new_data = UnsafePointer[ElementType].alloc(new_capacity)
 
-        var src = self.data + self.head
-        var dsc = new_data
+        src = self.data + self.head
+        dsc = new_data
         for i in range(head_len):
             (src + i).move_pointee_into(dsc + i)
 
