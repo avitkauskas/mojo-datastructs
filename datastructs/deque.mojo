@@ -22,6 +22,10 @@ struct Deque[ElementType: CollectionElement](
 
     It supports pushing and popping from both ends in O(1) time resizing the
     underlying storage as needed.  When it is deallocated, it frees its memory.
+
+    Parameters:
+        ElementType: The type of the elements in the deque.
+            Must implement the trait `CollectionElement`.
     """
 
     alias default_capacity: Int = 64
@@ -178,7 +182,7 @@ struct Deque[ElementType: CollectionElement](
         """Checks if two deques are equal.
 
         Parameters:
-            EqualityElementType: The type of the elements in the list.
+            EqualityElementType: The type of the elements in the deque.
                 Must implement the trait `EqualityComparableCollectionElement`.
 
         Args:
@@ -204,7 +208,7 @@ struct Deque[ElementType: CollectionElement](
         """Checks if two deques are not equal.
 
         Parameters:
-            EqualityElementType: The type of the elements in the list.
+            EqualityElementType: The type of the elements in the deque.
                 Must implement the trait `EqualityComparableCollectionElement`.
 
         Args:
@@ -221,7 +225,7 @@ struct Deque[ElementType: CollectionElement](
         """Verify if a given value is present in the deque.
 
         Parameters:
-            EqualityElementType: The type of the elements in the list.
+            EqualityElementType: The type of the elements in the deque.
                 Must implement the trait `EqualityComparableCollectionElement`.
 
         Args:
@@ -282,11 +286,11 @@ struct Deque[ElementType: CollectionElement](
     fn format_to[
         RepresentableElementType: RepresentableCollectionElement, //
     ](self: Deque[RepresentableElementType], inout writer: Formatter):
-        """Writes `my_list.__str__()` to a `Formatter`.
+        """Writes `my_deque.__str__()` to a `Formatter`.
 
         Parameters:
             RepresentableElementType: The type of the Deque elements.
-                Must have the trait `RepresentableCollectionElement`.
+                Must implement the trait `RepresentableCollectionElement`.
 
         Args:
             writer: The formatter to write to.
@@ -309,11 +313,11 @@ struct Deque[ElementType: CollectionElement](
         the way to call this method is a bit special. Here is an example below:
 
         ```mojo
-        var my_list = Deque[Int](1, 2, 3)
-        print(my_list.__str__())
+        var my_deque = Deque[Int](1, 2, 3)
+        print(my_deque.__str__())
         ```
 
-        When the compiler supports conditional methods, then a simple `str(my_list)` will
+        When the compiler supports conditional methods, then a simple `str(my_deque)` will
         be enough.
 
         The elements' type must implement the `__repr__()` method for this to work.
@@ -340,11 +344,11 @@ struct Deque[ElementType: CollectionElement](
         the way to call this method is a bit special. Here is an example below:
 
         ```mojo
-        var my_list = Deque[Int](1, 2, 3)
-        print(my_list.__repr__())
+        var my_deque = Deque[Int](1, 2, 3)
+        print(my_deque.__repr__())
         ```
 
-        When the compiler supports conditional methods, then a simple `repr(my_list)` will
+        When the compiler supports conditional methods, then a simple `repr(my_deque)` will
         be enough.
 
         The elements' type must implement the `__repr__()` for this to work.
