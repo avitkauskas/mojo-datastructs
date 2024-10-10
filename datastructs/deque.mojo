@@ -15,9 +15,7 @@ from memory import UnsafePointer, Reference
 # ===----------------------------------------------------------------------===#
 
 
-struct Deque[ElementType: CollectionElement](
-    Movable, Sized, Boolable
-):
+struct Deque[ElementType: CollectionElement](Movable, Sized, Boolable):
     """Implements a double-ended queue.
 
     It supports pushing and popping from both ends in O(1) time resizing the
@@ -537,6 +535,57 @@ struct Deque[ElementType: CollectionElement](
             if (self.data + offset)[] == value:
                 return i
         raise "ValueError: Given element is not in deque"
+
+    fn insert(inout self, idx: Int, owned value: ElementType) raises:
+        """Inserts the `value` into the deque at position `idx`.
+
+        Args:
+            idx: The position to insert the value into.
+            value: The value to insert.
+
+        Raises:
+            IndexError: If deque is already at its maximum size.
+        """
+        deque_len = len(self)
+
+        if self.maxlen > 0 and deque_len + 1 > self.maxlen:
+            raise "IndexError: Deque is already at its maximum size"
+
+        var normalized_idx = idx
+
+        if normalized_idx < -deque_len:
+            normalized_idx = 0
+
+        if normalized_idx > deque_len:
+            normalized_idx = deque_len
+
+        if normalized_idx < 0:
+            normalized_idx += deque_len
+
+        if normalized_idx == 0:
+            self.head = (self.head - 1) & (self.capacity - 1)
+            (self.data + self.head).init_pointee_move(value^)
+        elif normalized_idx == deque_len:
+            (self.data + self.tail).init_pointee_move(value^)
+            self.tail = (self.tail + 1) & (self.capacity - 1)
+        else:
+            if normalized_idx <= deque_len // 2:
+                for i in range(normalized_idx):
+                    src = (self.head + i) & (self.capacity - 1)
+                    dst = (src - 1) & (self.capacity - 1)
+                    (self.data + src).move_pointee_into(self.data + dst)
+                self.head = (self.head - 1) & (self.capacity - 1)
+            else:
+                for i in range(deque_len - normalized_idx):
+                    dst = (self.tail - i) & (self.capacity - 1)
+                    src = (dst - 1) & (self.capacity - 1)
+                    (self.data + src).move_pointee_into(self.data + dst)
+                self.tail = (self.tail + 1) & (self.capacity - 1)
+            offset = (self.head + normalized_idx) & (self.capacity - 1)
+            (self.data + offset).init_pointee_move(value^)
+
+        if self.head == self.tail:
+            self._realloc(self.capacity << 1)
 
     fn peek(self) raises -> ElementType:
         """Inspect the last (rightmost) element of the deque without removing it.

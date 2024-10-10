@@ -307,6 +307,30 @@ fn test_impl_extendleft() raises:
     assert_equal((q.data + 1)[], 2)
 
 
+fn test_impl_insert() raises:
+    var q = Deque[Int](0, 1, 2, 3, 4, 5)
+
+    q.insert(0, 6)
+    assert_equal(q.head, q.default_capacity - 1)
+    assert_equal((q.data + q.head)[], 6)
+    assert_equal((q.data + 0)[], 0)
+
+    q.insert(1, 7)
+    assert_equal(q.head, q.default_capacity - 2)
+    assert_equal((q.data + q.head + 0)[], 6)
+    assert_equal((q.data + q.head + 1)[], 7)
+
+    q.insert(8, 8)
+    assert_equal(q.tail, 7)
+    assert_equal((q.data + q.tail - 1)[], 8)
+    assert_equal((q.data + q.tail - 2)[], 5)
+
+    q.insert(8, 9)
+    assert_equal(q.tail, 8)
+    assert_equal((q.data + q.tail - 1)[], 8)
+    assert_equal((q.data + q.tail - 2)[], 9)
+
+
 fn test_impl_pop() raises:
     var q = Deque[Int](capacity=2, minlen=2, shrinking=True)
     with assert_raises():
@@ -352,7 +376,7 @@ fn test_impl_clear() raises:
 # ===----------------------------------------------------------------------===#
 
 
-fn test_impl_init_variadic_list() raises:
+fn test_init_variadic_list() raises:
     lst1 = List(0, 1)
     lst2 = List(2, 3)
 
@@ -486,6 +510,50 @@ fn test_index() raises:
     assert_equal(q.index(1, -3), 5)
     with assert_raises():
         _ = q.index(4)
+
+
+fn test_insert() raises:
+    var q = Deque(1, 2, 3)
+
+    # negative index outbound
+    q.insert(-10, 4)
+    assert_equal(q[0], 4)
+    assert_equal(q[1], 1)
+
+    # zero index
+    q.insert(0, 5)
+    assert_equal(q[0], 5)
+    assert_equal(q[1], 4)
+
+    # positive index inbound
+    q.insert(1, 6)
+    assert_equal(q[1], 6)
+    assert_equal(q[0], 5)
+    assert_equal(q[2], 4)
+
+    # positive index inbound
+    q.insert(5, 7)
+    assert_equal(q[5], 7)
+    assert_equal(q[4], 2)
+    assert_equal(q[6], 3)
+
+    # positive index eq length
+    q.insert(7, 8)
+    assert_equal(q[7], 8)
+    assert_equal(q[6], 3)
+
+    # positive index outbound
+    q.insert(10, 9)
+    assert_equal(q[8], 9)
+    assert_equal(q[7], 8)
+
+    # negative index inbound
+    q.insert(-3, 0)
+    assert_equal(q[6], 0)
+    assert_equal(q[7], 3)
+    assert_equal(q[5], 7)
+
+    assert_equal(len(q), 10)
 
 
 fn test_peek_and_peekleft() raises:
