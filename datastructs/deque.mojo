@@ -395,13 +395,15 @@ struct Deque[ElementType: CollectionElement](
         Args:
             value: The value to append.
         """
-        (self.data + self.tail).init_pointee_move(value^)
-        self.tail = (self.tail + 1) & (self.capacity - 1)
-        if self.head == self.tail:
-            self._realloc(self.capacity << 1)
-        if self.maxlen > 0 and len(self) > self.maxlen:
+        if self.maxlen > 0 and len(self) + 1 > self.maxlen:
             (self.data + self.head).destroy_pointee()
             self.head = (self.head + 1) & (self.capacity - 1)
+
+        (self.data + self.tail).init_pointee_move(value^)
+        self.tail = (self.tail + 1) & (self.capacity - 1)
+
+        if self.head == self.tail:
+            self._realloc(self.capacity << 1)
 
     fn appendleft(inout self, owned value: ElementType):
         """Appends a value to the left side of the deque.
@@ -409,13 +411,15 @@ struct Deque[ElementType: CollectionElement](
         Args:
             value: The value to append.
         """
-        self.head = (self.head - 1) & (self.capacity - 1)
-        (self.data + self.head).init_pointee_move(value^)
-        if self.head == self.tail:
-            self._realloc(self.capacity << 1)
-        if self.maxlen > 0 and len(self) > self.maxlen:
+        if self.maxlen > 0 and len(self) + 1 > self.maxlen:
             self.tail = (self.tail - 1) & (self.capacity - 1)
             (self.data + self.tail).destroy_pointee()
+
+        self.head = (self.head - 1) & (self.capacity - 1)
+        (self.data + self.head).init_pointee_move(value^)
+
+        if self.head == self.tail:
+            self._realloc(self.capacity << 1)
 
     fn clear(inout self):
         """Removes all elements from the deque leaving it with length 0.
@@ -600,23 +604,23 @@ struct Deque[ElementType: CollectionElement](
     fn rotate(inout self, n: Int = 1):
         """Rotates the deque by `n` steps.
 
-        If `n` is posstive, rotataes to the right.
+        If `n` is positive, rotates to the right.
         If `n` is negative, rotates to the left.
 
         Args:
             n: Number of steps to rotate the deque
                 (defaults to 1).
         """
-        if n > 0:
-            for _ in range(n):
-                self.tail = (self.tail - 1) & (self.capacity - 1)
-                self.head = (self.head - 1) & (self.capacity - 1)
-                (self.data + self.tail).move_pointee_into(self.data + self.head)
-        else:
+        if n < 0:
             for _ in range(-n):
                 (self.data + self.head).move_pointee_into(self.data + self.tail)
                 self.tail = (self.tail + 1) & (self.capacity - 1)
                 self.head = (self.head + 1) & (self.capacity - 1)
+        else:
+            for _ in range(n):
+                self.tail = (self.tail - 1) & (self.capacity - 1)
+                self.head = (self.head - 1) & (self.capacity - 1)
+                (self.data + self.tail).move_pointee_into(self.data + self.head)
 
     fn _realloc(inout self, new_capacity: Int):
         """Relocates data to a new storage buffer of the size of `new_capacity`.
