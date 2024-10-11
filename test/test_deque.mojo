@@ -8,7 +8,7 @@ from datastructs import Deque
 
 
 fn test_impl_init_default() raises:
-    var q = Deque[Int]()
+    q = Deque[Int]()
 
     assert_equal(q.capacity, q.default_capacity)
     assert_equal(q.minlen, q.default_capacity)
@@ -19,8 +19,6 @@ fn test_impl_init_default() raises:
 
 
 fn test_impl_init_capacity() raises:
-    var q: Deque[Int]
-
     q = Deque[Int](capacity=-10)
     assert_equal(q.capacity, q.default_capacity)
     assert_equal(q.minlen, q.default_capacity)
@@ -39,8 +37,6 @@ fn test_impl_init_capacity() raises:
 
 
 fn test_impl_init_minlen() raises:
-    var q: Deque[Int]
-
     q = Deque[Int](minlen=-10)
     assert_equal(q.minlen, q.default_capacity)
     assert_equal(q.capacity, q.default_capacity)
@@ -59,8 +55,6 @@ fn test_impl_init_minlen() raises:
 
 
 fn test_impl_init_maxlen() raises:
-    var q: Deque[Int]
-
     q = Deque[Int](maxlen=-10)
     assert_equal(q.maxlen, -1)
     assert_equal(q.capacity, q.default_capacity)
@@ -79,15 +73,13 @@ fn test_impl_init_maxlen() raises:
 
 
 fn test_impl_init_shrinking() raises:
-    var q: Deque[Int]
-
     q = Deque[Int](shrinking=False)
     assert_equal(q.shrinking, False)
     assert_equal(q.capacity, q.default_capacity)
 
 
 fn test_impl_init_variadic() raises:
-    var q = Deque(0, 1, 2)
+    q = Deque(0, 1, 2)
 
     assert_equal(q.head, 0)
     assert_equal(q.tail, 3)
@@ -98,7 +90,7 @@ fn test_impl_init_variadic() raises:
 
 
 fn test_impl_len() raises:
-    var q = Deque[Int]()
+    q = Deque[Int]()
 
     q.head = 0
     q.tail = 10
@@ -110,7 +102,7 @@ fn test_impl_len() raises:
 
 
 fn test_impl_bool() raises:
-    var q = Deque[Int]()
+    q = Deque[Int]()
     assert_false(q)
 
     q.tail = 1
@@ -118,7 +110,7 @@ fn test_impl_bool() raises:
 
 
 fn test_impl_append() raises:
-    var q = Deque[Int](capacity=2)
+    q = Deque[Int](capacity=2)
 
     q.append(0)
     assert_equal(q.head, 0)
@@ -187,7 +179,7 @@ fn test_impl_append_with_maxlen() raises:
 
 
 fn test_impl_appendleft() raises:
-    var q = Deque[Int](capacity=2)
+    q = Deque[Int](capacity=2)
 
     q.appendleft(0)
     # head wrapped to the end of the buffer
@@ -258,8 +250,8 @@ fn test_impl_appendleft_with_maxlen() raises:
 
 
 fn test_impl_extend() raises:
-    var q = Deque[Int](maxlen=4)
-    var lst = List[Int](0, 1, 2)
+    q = Deque[Int](maxlen=4)
+    lst = List[Int](0, 1, 2)
 
     q.extend(lst)
     assert_equal(q.head, 0)
@@ -282,8 +274,8 @@ fn test_impl_extend() raises:
 
 
 fn test_impl_extendleft() raises:
-    var q = Deque[Int](maxlen=4)
-    var lst = List[Int](0, 1, 2)
+    q = Deque[Int](maxlen=4)
+    lst = List[Int](0, 1, 2)
 
     q.extendleft(lst)
     # head wrapped to the end of then buffer
@@ -308,7 +300,7 @@ fn test_impl_extendleft() raises:
 
 
 fn test_impl_insert() raises:
-    var q = Deque[Int](0, 1, 2, 3, 4, 5)
+    q = Deque[Int](0, 1, 2, 3, 4, 5)
 
     q.insert(0, 6)
     assert_equal(q.head, q.default_capacity - 1)
@@ -332,7 +324,7 @@ fn test_impl_insert() raises:
 
 
 fn test_impl_pop() raises:
-    var q = Deque[Int](capacity=2, minlen=2, shrinking=True)
+    q = Deque[Int](capacity=2, minlen=2, shrinking=True)
     with assert_raises():
         _ = q.pop()
 
@@ -346,7 +338,7 @@ fn test_impl_pop() raises:
 
 
 fn test_popleft() raises:
-    var q = Deque[Int](capacity=2, minlen=2, shrinking=True)
+    q = Deque[Int](capacity=2, minlen=2, shrinking=True)
     assert_equal(q.capacity, 2)
     with assert_raises():
         _ = q.popleft()
@@ -361,7 +353,7 @@ fn test_popleft() raises:
 
 
 fn test_impl_clear() raises:
-    var q = Deque[Int](capacity=2)
+    q = Deque[Int](capacity=2)
     q.append(1)
     assert_equal(q.tail, 1)
 
@@ -380,22 +372,22 @@ fn test_init_variadic_list() raises:
     lst1 = List(0, 1)
     lst2 = List(2, 3)
 
-    var q = Deque(lst1, lst2)
+    q = Deque(lst1, lst2)
     assert_equal(q[0], lst1)
     assert_equal(q[1], lst2)
 
     lst1[0] = 4
     assert_equal(q[0], List(0, 1))
 
-    var p = Deque(lst1^, lst2^)
+    p = Deque(lst1^, lst2^)
     assert_equal(p[0], List(4, 1))
     assert_equal(p[1], List(2, 3))
 
 
 fn test_copy_trivial() raises:
-    var q = Deque(1, 2, 3)
+    q = Deque(1, 2, 3)
 
-    var p = Deque(q)
+    p = Deque(q)
     assert_equal(p[0], q[0])
 
     p[0] = 3
@@ -404,9 +396,9 @@ fn test_copy_trivial() raises:
 
 
 fn test_copy_list() raises:
-    var q = Deque[List[Int]]()
-    var lst1 = List(1, 2, 3)
-    var lst2 = List(4, 5, 6)
+    q = Deque[List[Int]]()
+    lst1 = List(1, 2, 3)
+    lst2 = List(4, 5, 6)
     q.append(lst1)
     q.append(lst2)
     assert_equal(q[0], lst1)
@@ -414,7 +406,7 @@ fn test_copy_list() raises:
     lst1[0] = 7
     assert_equal(q[0], List(1, 2, 3))
 
-    var p = Deque(q)
+    p = Deque(q)
     assert_equal(p[0], q[0])
 
     p[0][0] = 7
@@ -423,14 +415,14 @@ fn test_copy_list() raises:
 
 
 fn test_move_list() raises:
-    var q = Deque[List[Int]]()
-    var lst1 = List(1, 2, 3)
-    var lst2 = List(4, 5, 6)
+    q = Deque[List[Int]]()
+    lst1 = List(1, 2, 3)
+    lst2 = List(4, 5, 6)
     q.append(lst1)
     q.append(lst2)
     assert_equal(q[0], lst1)
 
-    var p = q^
+    p = q^
     assert_equal(p[0], lst1)
 
     lst1[0] = 7
@@ -439,7 +431,7 @@ fn test_move_list() raises:
 
 
 fn test_getitem() raises:
-    var q = Deque(1, 2)
+    q = Deque(1, 2)
     assert_equal(q[0], 1)
     assert_equal(q[1], 2)
     assert_equal(q[-1], 2)
@@ -447,7 +439,7 @@ fn test_getitem() raises:
 
 
 fn test_setitem() raises:
-    var q = Deque(1, 2)
+    q = Deque(1, 2)
     assert_equal(q[0], 1)
 
     q[0] = 3
@@ -458,19 +450,19 @@ fn test_setitem() raises:
 
 
 fn test_eq() raises:
-    var q = Deque[Int](1, 2, 3)
-    var p = Deque[Int](1, 2, 3)
+    q = Deque[Int](1, 2, 3)
+    p = Deque[Int](1, 2, 3)
 
     assert_true(q == p)
 
-    var r = Deque[Int](0, 1, 2, 3)
+    r = Deque[Int](0, 1, 2, 3)
     q.appendleft(0)
     assert_true(q == r)
 
 
 fn test_ne() raises:
-    var q = Deque[Int](1, 2, 3)
-    var p = Deque[Int](3, 2, 1)
+    q = Deque[Int](1, 2, 3)
+    p = Deque[Int](3, 2, 1)
 
     assert_true(q != p)
 
@@ -480,7 +472,7 @@ fn test_ne() raises:
 
 
 fn test_count() raises:
-    var q = Deque(1, 2, 1, 2, 3, 1)
+    q = Deque(1, 2, 1, 2, 3, 1)
 
     assert_equal(q.count(1), 3)
     assert_equal(q.count(2), 2)
@@ -492,14 +484,14 @@ fn test_count() raises:
 
 
 fn test_contains() raises:
-    var q = Deque[Int](1, 2, 3)
+    q = Deque[Int](1, 2, 3)
 
     assert_true(1 in q)
     assert_false(4 in q)
 
 
 fn test_index() raises:
-    var q = Deque(1, 2, 1, 2, 3, 1)
+    q = Deque(1, 2, 1, 2, 3, 1)
 
     assert_equal(q.index(2), 1)
     assert_equal(q.index(2, 1), 1)
@@ -513,7 +505,7 @@ fn test_index() raises:
 
 
 fn test_insert() raises:
-    var q = Deque[Int](capacity=4, maxlen=7)
+    q = Deque[Int](capacity=4, maxlen=7)
 
     # negative index outbound
     q.insert(-10, 0)
@@ -571,8 +563,47 @@ fn test_insert() raises:
         q.insert(3, 7)
 
 
+fn test_remove() raises:
+    q = Deque[Int](minlen=32)
+    q.extend(List(0, 1, 0, 2, 3, 0, 4, 5))
+    assert_equal(len(q), 8)
+    assert_equal(q.capacity, 64)
+
+    # remove first
+    q.remove(0)
+    # Deque(1, 0, 2, 3, 0, 4, 5)
+    assert_equal(len(q), 7)
+    assert_equal(q[0], 1)
+    # had to shrink its capacity
+    assert_equal(q.capacity, 32)
+
+    # remove last
+    q.remove(5)
+    # Deque(1, 0, 2, 3, 0, 4)
+    assert_equal(len(q), 6)
+    assert_equal(q[5], 4)
+    # should not shrink further
+    assert_equal(q.capacity, 32)
+
+    # remove in the first half
+    q.remove(0)
+    # Deque(1, 2, 3, 0, 4)
+    assert_equal(len(q), 5)
+    assert_equal(q[1], 2)
+
+    # remove in the last half
+    q.remove(0)
+    # Deque(1, 2, 3, 4)
+    assert_equal(len(q), 4)
+    assert_equal(q[3], 4)
+
+    # assert raises when not found
+    with assert_raises():
+        q.remove(5)
+
+
 fn test_peek_and_peekleft() raises:
-    var q = Deque[Int](capacity=4)
+    q = Deque[Int](capacity=4)
     assert_equal(q.capacity, 4)
 
     with assert_raises():
@@ -600,7 +631,7 @@ fn test_peek_and_peekleft() raises:
 
 
 fn test_reverse() raises:
-    var q = Deque(0, 1, 2, 3)
+    q = Deque(0, 1, 2, 3)
 
     q.reverse()
     assert_equal(q[0], 3)
@@ -615,7 +646,7 @@ fn test_reverse() raises:
 
 
 fn test_rotate() raises:
-    var q = Deque(0, 1, 2, 3)
+    q = Deque(0, 1, 2, 3)
 
     q.rotate()
     assert_equal(q[0], 3)
@@ -635,9 +666,9 @@ fn test_rotate() raises:
 
 
 fn test_iter() raises:
-    var q = Deque(1, 2, 3)
+    q = Deque(1, 2, 3)
 
-    var i = 0
+    i = 0
     for e in q:
         assert_equal(e[], q[i])
         i += 1
@@ -651,14 +682,14 @@ fn test_iter() raises:
 
 
 fn test_iter_with_list() raises:
-    var q = Deque[List[Int]]()
-    var lst1 = List(1, 2, 3)
-    var lst2 = List(4, 5, 6)
+    q = Deque[List[Int]]()
+    lst1 = List(1, 2, 3)
+    lst2 = List(4, 5, 6)
     q.append(lst1)
     q.append(lst2)
     assert_equal(len(q), 2)
 
-    var i = 0
+    i = 0
     for e in q:
         assert_equal(e[], q[i])
         i += 1
@@ -678,9 +709,9 @@ fn test_iter_with_list() raises:
 
 
 fn test_reversed_iter() raises:
-    var q = Deque(1, 2, 3)
+    q = Deque(1, 2, 3)
 
-    var i = 0
+    i = 0
     # change to reversed(q) when implemented in builtin for Deque
     for e in q.__reversed__():
         i -= 1
@@ -689,12 +720,12 @@ fn test_reversed_iter() raises:
 
 
 fn test_str_and_repr() raises:
-    var q = Deque(1, 2, 3)
+    q = Deque(1, 2, 3)
 
     assert_equal(q.__str__(), "Deque(1, 2, 3)")
     assert_equal(q.__repr__(), "Deque(1, 2, 3)")
 
-    var s = Deque("a", "b", "c")
+    s = Deque("a", "b", "c")
 
     assert_equal(s.__str__(), "Deque('a', 'b', 'c')")
     assert_equal(s.__repr__(), "Deque('a', 'b', 'c')")

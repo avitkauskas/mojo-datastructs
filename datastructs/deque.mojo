@@ -583,6 +583,50 @@ struct Deque[ElementType: CollectionElement](
         if self.head == self.tail:
             self._realloc(self.capacity << 1)
 
+    fn remove[
+        EqualityElementType: EqualityComparableCollectionElement, //
+    ](
+        inout self: Deque[EqualityElementType],
+        value: EqualityElementType,
+    ) raises:
+        """Removes the first occurrence of the `value`.
+
+        Args:
+            value: The value to remove.
+
+        Raises:
+            ValueError: If the value is not found in the deque.
+        """
+        deque_len = len(self)
+        for idx in range(deque_len):
+            offset = (self.head + idx) & (self.capacity - 1)
+            if (self.data + offset)[] == value:
+                (self.data + offset).destroy_pointee()
+
+                if idx < deque_len // 2:
+                    for i in range(idx - 1, -1, -1):
+                        src = (self.head + i) & (self.capacity - 1)
+                        dst = (src + 1) & (self.capacity - 1)
+                        (self.data + src).move_pointee_into(self.data + dst)
+                    self.head = (self.head + 1) & (self.capacity - 1)
+                else:
+                    for i in range(idx + 1, deque_len):
+                        src = (self.head + i) & (self.capacity - 1)
+                        dst = (src - 1) & (self.capacity - 1)
+                        (self.data + src).move_pointee_into(self.data + dst)
+                    self.tail = (self.tail - 1) & (self.capacity - 1)
+
+                if (
+                    self.shrinking
+                    and self.capacity > self.minlen
+                    and self.capacity // 4 >= len(self)
+                ):
+                    self._realloc(self.capacity >> 1)
+
+                return
+
+        raise "ValueError: Given element is not in deque"
+
     fn peek(self) raises -> ElementType:
         """Inspect the last (rightmost) element of the deque without removing it.
 
