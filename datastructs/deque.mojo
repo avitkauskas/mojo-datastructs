@@ -532,10 +532,10 @@ struct Deque[ElementType: CollectionElement](
         start_normalized = _clip(start_normalized, 0, len(self))
         stop_normalized = _clip(stop_normalized, 0, len(self))
 
-        for i in range(start_normalized, stop_normalized):
-            offset = (self.head + i) & (self.capacity - 1)
+        for idx in range(start_normalized, stop_normalized):
+            offset = (self.head + idx) & (self.capacity - 1)
             if (self.data + offset)[] == value:
-                return i
+                return idx
         raise "ValueError: Given element is not in deque"
 
     fn insert(inout self, idx: Int, owned value: ElementType) raises:
@@ -550,7 +550,7 @@ struct Deque[ElementType: CollectionElement](
         """
         deque_len = len(self)
 
-        if self.maxlen > 0 and deque_len + 1 > self.maxlen:
+        if deque_len == self.maxlen:
             raise "IndexError: Deque is already at its maximum size"
 
         normalized_idx = idx
@@ -564,27 +564,21 @@ struct Deque[ElementType: CollectionElement](
         if normalized_idx < 0:
             normalized_idx += deque_len
 
-        if normalized_idx == 0:
+        if normalized_idx <= deque_len // 2:
+            for i in range(normalized_idx):
+                src = (self.head + i) & (self.capacity - 1)
+                dst = (src - 1) & (self.capacity - 1)
+                (self.data + src).move_pointee_into(self.data + dst)
             self.head = (self.head - 1) & (self.capacity - 1)
-            (self.data + self.head).init_pointee_move(value^)
-        elif normalized_idx == deque_len:
-            (self.data + self.tail).init_pointee_move(value^)
-            self.tail = (self.tail + 1) & (self.capacity - 1)
         else:
-            if normalized_idx <= deque_len // 2:
-                for i in range(normalized_idx):
-                    src = (self.head + i) & (self.capacity - 1)
-                    dst = (src - 1) & (self.capacity - 1)
-                    (self.data + src).move_pointee_into(self.data + dst)
-                self.head = (self.head - 1) & (self.capacity - 1)
-            else:
-                for i in range(deque_len - normalized_idx):
-                    dst = (self.tail - i) & (self.capacity - 1)
-                    src = (dst - 1) & (self.capacity - 1)
-                    (self.data + src).move_pointee_into(self.data + dst)
-                self.tail = (self.tail + 1) & (self.capacity - 1)
-            offset = (self.head + normalized_idx) & (self.capacity - 1)
-            (self.data + offset).init_pointee_move(value^)
+            for i in range(deque_len - normalized_idx):
+                dst = (self.tail - i) & (self.capacity - 1)
+                src = (dst - 1) & (self.capacity - 1)
+                (self.data + src).move_pointee_into(self.data + dst)
+            self.tail = (self.tail + 1) & (self.capacity - 1)
+
+        offset = (self.head + normalized_idx) & (self.capacity - 1)
+        (self.data + offset).init_pointee_move(value^)
 
         if self.head == self.tail:
             self._realloc(self.capacity << 1)

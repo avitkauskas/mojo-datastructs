@@ -513,47 +513,62 @@ fn test_index() raises:
 
 
 fn test_insert() raises:
-    var q = Deque(1, 2, 3)
+    var q = Deque[Int](capacity=4, maxlen=7)
 
     # negative index outbound
-    q.insert(-10, 4)
-    assert_equal(q[0], 4)
-    assert_equal(q[1], 1)
+    q.insert(-10, 0)
+    # Deque(0)
+    assert_equal(q[0], 0)
+    assert_equal(len(q), 1)
 
     # zero index
-    q.insert(0, 5)
-    assert_equal(q[0], 5)
+    q.insert(0, 1)
+    # Deque(1, 0)
+    assert_equal(q[0], 1)
+    assert_equal(q[1], 0)
+    assert_equal(len(q), 2)
+
+    # # positive index eq length
+    q.insert(2, 2)
+    # Deque(1, 0, 2)
+    assert_equal(q[2], 2)
+    assert_equal(q[1], 0)
+
+    # # positive index outbound
+    q.insert(10, 3)
+    # Deque(1, 0, 2, 3)
+    assert_equal(q[3], 3)
+    assert_equal(q[2], 2)
+
+    # assert deque buffer reallocated
+    assert_equal(len(q), 4)
+    assert_equal(q.capacity, 8)
+
+    # # positive index inbound
+    q.insert(1, 4)
+    # Deque(1, 4, 0, 2, 3)
     assert_equal(q[1], 4)
+    assert_equal(q[0], 1)
+    assert_equal(q[2], 0)
 
-    # positive index inbound
-    q.insert(1, 6)
-    assert_equal(q[1], 6)
-    assert_equal(q[0], 5)
-    assert_equal(q[2], 4)
-
-    # positive index inbound
-    q.insert(5, 7)
-    assert_equal(q[5], 7)
+    # # positive index inbound
+    q.insert(3, 5)
+    # Deque(1, 4, 0, 5, 2, 3)
+    assert_equal(q[3], 5)
+    assert_equal(q[2], 0)
     assert_equal(q[4], 2)
-    assert_equal(q[6], 3)
 
-    # positive index eq length
-    q.insert(7, 8)
-    assert_equal(q[7], 8)
-    assert_equal(q[6], 3)
+    # # negative index inbound
+    q.insert(-3, 6)
+    # Deque(1, 4, 0, 6, 5, 2, 3)
+    assert_equal(q[3], 6)
+    assert_equal(q[2], 0)
+    assert_equal(q[4], 5)
 
-    # positive index outbound
-    q.insert(10, 9)
-    assert_equal(q[8], 9)
-    assert_equal(q[7], 8)
-
-    # negative index inbound
-    q.insert(-3, 0)
-    assert_equal(q[6], 0)
-    assert_equal(q[7], 3)
-    assert_equal(q[5], 7)
-
-    assert_equal(len(q), 10)
+    # deque is at its maxlen
+    assert_equal(len(q), 7)
+    with assert_raises():
+        q.insert(3, 7)
 
 
 fn test_peek_and_peekleft() raises:
