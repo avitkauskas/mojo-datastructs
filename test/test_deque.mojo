@@ -78,6 +78,25 @@ fn test_impl_init_shrink() raises:
     assert_equal(q.capacity, q.default_capacity)
 
 
+fn test_impl_init_list() raises:
+    q = Deque(elements=List(0, 1, 2))
+    assert_equal(q.head, 0)
+    assert_equal(q.tail, 3)
+    assert_equal(q.capacity, q.default_capacity)
+    assert_equal((q.data + 0)[], 0)
+    assert_equal((q.data + 1)[], 1)
+    assert_equal((q.data + 2)[], 2)
+
+
+fn test_impl_init_list_args() raises:
+    q = Deque(elements=List(0, 1, 2), maxlen=2, capacity=10)
+    assert_equal(q.head, 1)
+    assert_equal(q.tail, 3)
+    assert_equal(q.capacity, 4)
+    assert_equal((q.data + 1)[], 1)
+    assert_equal((q.data + 2)[], 2)
+
+
 fn test_impl_init_variadic() raises:
     q = Deque(0, 1, 2)
 

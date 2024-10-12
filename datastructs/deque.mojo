@@ -67,6 +67,7 @@ struct Deque[ElementType: CollectionElement](
     fn __init__(
         inout self,
         *,
+        elements: Optional[List[ElementType]] = None,
         capacity: Int = self.default_capacity,
         minlen: Int = self.default_capacity,
         maxlen: Int = -1,
@@ -75,6 +76,7 @@ struct Deque[ElementType: CollectionElement](
         """Constructs an empty deque.
 
         Args:
+            elements: Optional list of initial deque elements.
             capacity: The initial capacity of the deque.
             minlen: The minimum allowed capacity of the deque when shrinking.
             maxlen: The maximum allowed capacity of the deque when growing.
@@ -103,6 +105,9 @@ struct Deque[ElementType: CollectionElement](
         self.minlen = min_capacity
         self.maxlen = max_capacity
         self.shrink = shrink
+
+        if elements is not None:
+            self.extend(elements.value())
 
     fn __init__(inout self, owned *values: ElementType):
         """Constructs a deque from the given values.
