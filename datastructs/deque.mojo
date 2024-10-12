@@ -187,6 +187,39 @@ struct Deque[ElementType: CollectionElement](
     # Operator dunders
     # ===-------------------------------------------------------------------===#
 
+    fn __add__(self, other: Self) -> Self:
+        """Concatenates self with other and returns the result as a new deque.
+
+        Args:
+            other: Deque whose elements will be appended to the elements of self.
+
+        Returns:
+            The newly created deque with the default characteristics.
+        """
+        total_len = len(self) + len(other)
+        
+        if total_len < self.default_capacity:
+            new_capacity = self.default_capacity
+        else:
+            new_capacity = bit_ceil(total_len)
+
+        if new_capacity == total_len:
+            new_capacity <<= 1
+
+        new = Self(capacity=new_capacity)
+
+        for i in range(len(self)):
+            offset = (self.head + i) & (self.capacity - 1)
+            (new.data + i).init_pointee_copy((self.data + offset)[])
+
+        dst = new.data + len(self)
+        for i in range(len(other)):
+            offset = (other.head + i) & (other.capacity - 1)
+            (dst + i).init_pointee_copy((other.data + offset)[])
+
+        new.tail = total_len
+        return new^
+
     fn __eq__[
         EqualityElementType: EqualityComparableCollectionElement, //
     ](

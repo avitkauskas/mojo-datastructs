@@ -382,6 +382,31 @@ fn test_impl_clear() raises:
     assert_equal(q.capacity, q.minlen)
 
 
+fn test_impl_add() raises:
+    l1 = List(0, 1, 2, 3, 4, 5, 6, 7)
+    l2 = List(8, 9, 10, 11, 12, 13, 14, 15)
+    q1 = Deque(elements=l1, capacity=20, maxlen=30)
+    q2 = Deque(elements=l2, minlen=200, shrink=False)
+    
+    q3 = q1 + q2
+    assert_equal(q3.capacity, q3.default_capacity)
+    assert_equal(q3.minlen, q3.default_capacity)
+    assert_equal(q3.maxlen, -1)
+    assert_equal(q3.shrink, True)
+    assert_equal(q3.head, 0)
+    assert_equal(q3.tail, 16)
+    for i in range(len(q3)):
+        assert_equal((q3.data + i)[], i)
+
+    q4 = q3 + q3 + q3 + q3
+    # capacity should be double when len is a power of two
+    assert_equal(q4.capacity, 2 * q4.default_capacity)
+    assert_equal(q4.head, 0)
+    assert_equal(q4.tail, 64)
+    assert_equal((q4.data + 0)[], 0)
+    assert_equal((q4.data + 63)[], 15)
+
+
 # ===----------------------------------------------------------------------===#
 # API Interface tests
 # ===----------------------------------------------------------------------===#
