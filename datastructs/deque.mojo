@@ -604,7 +604,7 @@ struct Deque[ElementType: CollectionElement](
                 (self.data + offset).destroy_pointee()
 
                 if idx < deque_len // 2:
-                    for i in range(idx - 1, -1, -1):
+                    for i in reversed(range(idx)):
                         src = (self.head + i) & (self.capacity - 1)
                         dst = (src + 1) & (self.capacity - 1)
                         (self.data + src).move_pointee_into(self.data + dst)
