@@ -15,7 +15,7 @@ fn test_impl_init_default() raises:
     assert_equal(q.maxlen, -1)
     assert_equal(q.head, 0)
     assert_equal(q.tail, 0)
-    assert_equal(q.auto_shrink, True)
+    assert_equal(q.shrink, True)
 
 
 fn test_impl_init_capacity() raises:
@@ -72,9 +72,9 @@ fn test_impl_init_maxlen() raises:
     assert_equal(q.capacity, q.default_capacity)
 
 
-fn test_impl_init_auto_shrink() raises:
-    q = Deque[Int](auto_shrink=False)
-    assert_equal(q.auto_shrink, False)
+fn test_impl_init_shrink() raises:
+    q = Deque[Int](shrink=False)
+    assert_equal(q.shrink, False)
     assert_equal(q.capacity, q.default_capacity)
 
 

@@ -57,7 +57,7 @@ struct Deque[ElementType: CollectionElement](
     var maxlen: Int
     """The maximum allowed capacity in the number of elements of the deque."""
 
-    var auto_shrink: Bool
+    var shrink: Bool
     """The flag defining if the deque storage is re-allocated to make it smaller when possible."""
 
     # ===-------------------------------------------------------------------===#
@@ -70,7 +70,7 @@ struct Deque[ElementType: CollectionElement](
         capacity: Int = self.default_capacity,
         minlen: Int = self.default_capacity,
         maxlen: Int = -1,
-        auto_shrink: Bool = True,
+        shrink: Bool = True,
     ):
         """Constructs an empty deque.
 
@@ -78,7 +78,7 @@ struct Deque[ElementType: CollectionElement](
             capacity: The initial capacity of the deque.
             minlen: The minimum allowed capacity of the deque when shrinking.
             maxlen: The maximum allowed capacity of the deque when growing.
-            auto_shrink: Should storage be de-allocated when not needed.
+            shrink: Should storage be de-allocated when not needed.
         """
         if capacity <= 0:
             deque_capacity = self.default_capacity
@@ -102,7 +102,7 @@ struct Deque[ElementType: CollectionElement](
         self.tail = 0
         self.minlen = min_capacity
         self.maxlen = max_capacity
-        self.auto_shrink = auto_shrink
+        self.shrink = shrink
 
     fn __init__(inout self, owned *values: ElementType):
         """Constructs a deque from the given values.
@@ -149,7 +149,7 @@ struct Deque[ElementType: CollectionElement](
             capacity=other.capacity,
             minlen=other.minlen,
             maxlen=other.maxlen,
-            auto_shrink=other.auto_shrink,
+            shrink=other.shrink,
         )
         for i in range(len(other)):
             offset = (other.head + i) & (other.capacity - 1)
@@ -169,7 +169,7 @@ struct Deque[ElementType: CollectionElement](
         self.tail = existing.tail
         self.minlen = existing.minlen
         self.maxlen = existing.maxlen
-        self.auto_shrink = existing.auto_shrink
+        self.shrink = existing.shrink
 
     fn __del__(owned self):
         """Destroys all elements in the deque and free its memory."""
@@ -617,7 +617,7 @@ struct Deque[ElementType: CollectionElement](
                     self.tail = (self.tail - 1) & (self.capacity - 1)
 
                 if (
-                    self.auto_shrink
+                    self.shrink
                     and self.capacity > self.minlen
                     and self.capacity // 4 >= len(self)
                 ):
@@ -671,7 +671,7 @@ struct Deque[ElementType: CollectionElement](
         element = (self.data + self.tail).take_pointee()
 
         if (
-            self.auto_shrink
+            self.shrink
             and self.capacity > self.minlen
             and self.capacity // 4 >= len(self)
         ):
@@ -695,7 +695,7 @@ struct Deque[ElementType: CollectionElement](
         self.head = (self.head + 1) & (self.capacity - 1)
 
         if (
-            self.auto_shrink
+            self.shrink
             and self.capacity > self.minlen
             and self.capacity // 4 >= len(self)
         ):
