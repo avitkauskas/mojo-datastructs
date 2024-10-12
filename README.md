@@ -29,7 +29,7 @@ As Mojo is designed to be a superset of Python, this Deque implementation suppor
 
 The following Python `deque` methods are available: `append()`, `appendleft()`, `clear()`, `count()`, `extend()`, `extendleft()`, `index()`, `insert()`, `remove()`, `pop()`, `popleft()`, `reverse()`, and `rotate()`.
 
-In addition to these methods, the Deque supports equality comparisons, meaning you can check if two deques are equal using `==`. It also allows membership tests like `if element in deque`, and it is fully iterable, enabling `for element in deque` loops to function as expected.
+In addition to these methods, the Deque supports equality comparisons, allowing you to check if two deques are equal using `==`. It can also be treated as a boolean value, where an empty deque evaluates to `False`, and a non-empty deque evaluates to `True`. Membership tests (`if element in deque`) and iteration (`for element in deque`) are fully supported.
 
 In general, the Deque should function just like the Python deque. If you're unfamiliar with the Python `deque`, refer to the Python documentation for more details: [Python Collections Documentation](https://docs.python.org/3/library/collections.html#collections.deque).
 
@@ -46,8 +46,8 @@ Beyond Python’s `maxlen` argument, this Deque offers additional constructor op
 By default, the deque allocates memory for 64 elements and adjusts its size automatically as needed. However, if you want to optimize performance and reduce buffer reallocations, these additional options can be helpful:
 
 - `capacity`: Sets the initial size of the deque when created.
-- `minlen`: Ensures the deque's buffer will not shrink below this number of elements, even if fewer elements are present.
-- `shrink`: Controls whether the buffer should shrink when elements are removed. Setting `shrink=False` prevents shrinking, keeping the buffer size constant or growing as needed.
+- `minlen`: Ensures the buffer will retain memory for at least this many elements, even if the deque's actual size drops below that number.
+- `shrink`: Disables shrinking entirely when set to `shrink=False`. This ensures that the buffer only grows as needed but never shrinks, optimizing for performance at the cost of memory usage.
 
-For example, if you expect your deque to quickly grow to 10,000 elements but rarely drop below 5,000, you can initialize it with `Deque(capacity=10000, minlen=5000)`. This will reduce expensive buffer reallocations and improve performance. Alternatively, if speed is the priority and memory usage is less of a concern, you can use `Deque(capacity=10000, shrink=False)`, which allocates memory for 10,000 elements upfront and prevents shrinking, anticipating future growth.
+For example, if you expect your deque to quickly grow to 10,000 elements but rarely drop below 5,000, you can initialize it with `Deque(capacity=10000, minlen=5000)`. This will reduce expensive buffer reallocations and improve performance. Alternatively, if speed is the priority and memory usage is less of a concern, you can use `Deque(capacity=10000, shrink=False)`, which allocates memory for 10,000 elements upfront and prevents shrinking altogether, anticipating future growth.
 
