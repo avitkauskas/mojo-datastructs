@@ -383,28 +383,98 @@ fn test_impl_clear() raises:
 
 
 fn test_impl_add() raises:
-    l1 = List(0, 1, 2, 3, 4, 5, 6, 7)
-    l2 = List(8, 9, 10, 11, 12, 13, 14, 15)
+    l1 = List(1, 2, 3, 4, 5, 6, 7, 8)
+    l2 = List(9, 10, 11, 12, 13, 14, 15, 16)
     q1 = Deque(elements=l1, capacity=20, maxlen=30)
     q2 = Deque(elements=l2, minlen=200, shrink=False)
-    
+
+    assert_equal(q1.capacity, 32)
+    assert_equal(q1.maxlen, 30)
+    assert_equal(q2.capacity, 64)
+    assert_equal(q2.minlen, 256)
+
     q3 = q1 + q2
-    assert_equal(q3.capacity, q3.default_capacity)
-    assert_equal(q3.minlen, q3.default_capacity)
-    assert_equal(q3.maxlen, -1)
+    # has to inherit q1 properties
+    assert_equal(q3.capacity, 32)
+    assert_equal(q3.minlen, 64)
+    assert_equal(q3.maxlen, 30)
     assert_equal(q3.shrink, True)
     assert_equal(q3.head, 0)
     assert_equal(q3.tail, 16)
     for i in range(len(q3)):
-        assert_equal((q3.data + i)[], i)
+        assert_equal((q3.data + i)[], 1 + i)
 
-    q4 = q3 + q3 + q3 + q3
-    # capacity should be double when len is a power of two
-    assert_equal(q4.capacity, 2 * q4.default_capacity)
+    q4 = q2 + q1
+    # has to inherit q2 properties
+    assert_equal(q4.capacity, 64)
+    assert_equal(q4.minlen, 256)
+    assert_equal(q4.maxlen, -1)
+    assert_equal(q4.shrink, False)
     assert_equal(q4.head, 0)
-    assert_equal(q4.tail, 64)
-    assert_equal((q4.data + 0)[], 0)
-    assert_equal((q4.data + 63)[], 15)
+    assert_equal(q4.tail, 16)
+    mid_len = len(q4) // 2
+    for i in range(mid_len):
+        assert_equal((q4.data + i)[], 9 + i)
+    for i in range(mid_len, len(q4)):
+        assert_equal((q4.data + i)[], i - 7)
+
+    q5 = q3 + q4
+    # has to inherit q3 properties
+    assert_equal(q5.capacity, 32)
+    assert_equal(q5.minlen, 64)
+    assert_equal(q5.maxlen, 30)
+    assert_equal(q5.shrink, True)
+    # has to obey to maxlen
+    assert_equal(len(q5), 30)
+    assert_equal(q5.head, 2)
+    assert_equal(q5.tail, 0)
+    assert_equal((q5.data + 2)[], 3)
+    assert_equal((q5.data + 31)[], 8)
+
+    q6 = q4 + q3
+    # has to inherit q4 properties
+    assert_equal(q6.capacity, 64)
+    assert_equal(q6.minlen, 256)
+    assert_equal(q6.maxlen, -1)
+    assert_equal(q6.shrink, False)
+    # has to obey to maxlen
+    assert_equal(len(q6), 32)
+    assert_equal(q6.head, 0)
+    assert_equal(q6.tail, 32)
+    assert_equal((q6.data + 0)[], 9)
+    assert_equal((q6.data + 31)[], 16)
+
+
+fn test_impl_iadd() raises:
+    l1 = List(1, 2, 3, 4, 5, 6, 7, 8)
+    l2 = List(9, 10, 11, 12, 13, 14, 15, 16)
+    q1 = Deque(elements=l1, maxlen=10)
+    q2 = Deque(elements=l2, minlen=200, shrink=False)
+
+    q1 += q2
+    # has to keep q1 properties
+    assert_equal(q1.capacity, 16)
+    assert_equal(q1.minlen, 64)
+    assert_equal(q1.maxlen, 10)
+    assert_equal(q1.shrink, True)
+    # has to obey maxlen
+    assert_equal(len(q1), 10)
+    assert_equal(q1.head, 6)
+    assert_equal(q1.tail, 0)
+    for i in range(len(q1)):
+        assert_equal(q1[i], 7 + i)
+
+    q2 += q1
+    # has to keep q2 properties
+    assert_equal(q2.capacity, 64)
+    assert_equal(q2.minlen, 256)
+    assert_equal(q2.maxlen, -1)
+    assert_equal(q2.shrink, False)
+    assert_equal(len(q2), 18)
+    assert_equal(q2.head, 0)
+    assert_equal(q2.tail, 18)
+    assert_equal(q2[0], 9)
+    assert_equal(q2[17], 16)
 
 
 # ===----------------------------------------------------------------------===#

@@ -194,31 +194,21 @@ struct Deque[ElementType: CollectionElement](
             other: Deque whose elements will be appended to the elements of self.
 
         Returns:
-            The newly created deque with the default characteristics.
+            The newly created deque with the properties of `self`.
         """
-        total_len = len(self) + len(other)
-        
-        if total_len < self.default_capacity:
-            new_capacity = self.default_capacity
-        else:
-            new_capacity = bit_ceil(total_len)
-
-        if new_capacity == total_len:
-            new_capacity <<= 1
-
-        new = Self(capacity=new_capacity)
-
-        for i in range(len(self)):
-            offset = (self.head + i) & (self.capacity - 1)
-            (new.data + i).init_pointee_copy((self.data + offset)[])
-
-        dst = new.data + len(self)
-        for i in range(len(other)):
-            offset = (other.head + i) & (other.capacity - 1)
-            (dst + i).init_pointee_copy((other.data + offset)[])
-
-        new.tail = total_len
+        new = Deque(other=self)
+        for element in other:
+            new.append(element[])
         return new^
+
+    fn __iadd__(inout self, other: Self):
+        """Appends the elements of other deque into self.
+
+        Args:
+            other: Deque whose elements will be appended to self.
+        """
+        for element in other:
+            self.append(element[])
 
     fn __eq__[
         EqualityElementType: EqualityComparableCollectionElement, //
@@ -288,7 +278,7 @@ struct Deque[ElementType: CollectionElement](
 
     fn __iter__(
         ref [_]self,
-    ) -> _DequeIter[ElementType, __lifetime_of(self)]:
+    ) -> _DequeIter[ElementType, __origin_of(self)]:
         """Iterates over elements of the deque, returning the references.
 
         Returns:
@@ -298,7 +288,7 @@ struct Deque[ElementType: CollectionElement](
 
     fn __reversed__(
         ref [_]self,
-    ) -> _DequeIter[ElementType, __lifetime_of(self), False]:
+    ) -> _DequeIter[ElementType, __origin_of(self), False]:
         """Iterate backwards over the deque, returning the references.
 
         Returns:
@@ -328,9 +318,7 @@ struct Deque[ElementType: CollectionElement](
         """
         return (self.tail - self.head) & (self.capacity - 1)
 
-    fn __getitem__(
-        ref [_]self, idx: Int
-    ) -> ref [__lifetime_of(self)] ElementType:
+    fn __getitem__(ref [_]self, idx: Int) -> ref [self] ElementType:
         """Gets the deque element at the given index.
 
         Args:
@@ -445,7 +433,7 @@ struct Deque[ElementType: CollectionElement](
         Args:
             value: The value to append.
         """
-        if self.maxlen > 0 and len(self) + 1 > self.maxlen:
+        if len(self) == self.maxlen:
             (self.data + self.head).destroy_pointee()
             self.head = (self.head + 1) & (self.capacity - 1)
 
@@ -461,7 +449,7 @@ struct Deque[ElementType: CollectionElement](
         Args:
             value: The value to append.
         """
-        if self.maxlen > 0 and len(self) + 1 > self.maxlen:
+        if len(self) == self.maxlen:
             self.tail = (self.tail - 1) & (self.capacity - 1)
             (self.data + self.tail).destroy_pointee()
 
@@ -812,7 +800,7 @@ struct Deque[ElementType: CollectionElement](
 struct _DequeIter[
     deque_mutability: Bool, //,
     ElementType: CollectionElement,
-    deque_lifetime: Lifetime[deque_mutability].type,
+    deque_lifetime: Origin[deque_mutability].type,
     forward: Bool = True,
 ]:
     """Iterator for Deque.
