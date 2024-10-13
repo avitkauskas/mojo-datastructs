@@ -196,7 +196,7 @@ struct Deque[ElementType: CollectionElement](
         Returns:
             The newly created deque with the properties of `self`.
         """
-        new = Deque(other=self)
+        new = Self(other=self)
         for element in other:
             new.append(element[])
         return new^
@@ -209,6 +209,43 @@ struct Deque[ElementType: CollectionElement](
         """
         for element in other:
             self.append(element[])
+
+    fn __mul__(self, n: Int) -> Self:
+        """Concatenates `n` deques of `self` and returns a new deque.
+
+        Args:
+            n: The multiplier number.
+
+        Returns:
+            The new deque.
+        """
+        if n <= 0:
+            return Self(
+                capacity=self.minlen,
+                minlen=self.minlen,
+                maxlen=self.maxlen,
+                shrink=self.shrink,
+            )
+        new = Self(other=self)
+        for _ in range(n - 1):
+            for element in self:
+                new.append(element[])
+        return new^
+
+    fn __imul__(inout self, n: Int):
+        """Concatenates self `n` times in place.
+
+        Args:
+            n: The multiplier number.
+        """
+        if n <= 0:
+            self.clear()
+            return
+
+        orig = Self(other=self)
+        for _ in range(n - 1):
+            for element in orig:
+                self.append(element[])
 
     fn __eq__[
         EqualityElementType: EqualityComparableCollectionElement, //

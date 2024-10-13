@@ -477,6 +477,101 @@ fn test_impl_iadd() raises:
     assert_equal(q2[17], 16)
 
 
+fn test_impl_mul() raises:
+    l = List(1, 2, 3)
+    q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
+
+    q1 = q * 0
+    assert_equal(q1.head, 0)
+    assert_equal(q1.tail, 0)
+    assert_equal(q1.capacity, q.minlen)
+    assert_equal(q1.minlen, q.minlen)
+    assert_equal(q1.maxlen, q.maxlen)
+    assert_equal(q1.shrink, q.shrink)
+
+    q2 = q * 1
+    assert_equal(q2.head, 0)
+    assert_equal(q2.tail, len(q))
+    assert_equal(q2.capacity, q.capacity)
+    assert_equal(q2.minlen, q.minlen)
+    assert_equal(q2.maxlen, q.maxlen)
+    assert_equal(q2.shrink, q.shrink)
+    assert_equal((q2.data + 0)[], (q.data + 0)[])
+    assert_equal((q2.data + 1)[], (q.data + 1)[])
+    assert_equal((q2.data + 2)[], (q.data + 2)[])
+
+    q3 = q * 2
+    assert_equal(q3.head, 0)
+    assert_equal(q3.tail, 2 * len(q))
+    assert_equal(q3.minlen, q.minlen)
+    assert_equal(q3.maxlen, q.maxlen)
+    assert_equal(q3.shrink, q.shrink)
+    assert_equal((q3.data + 0)[], (q.data + 0)[])
+    assert_equal((q3.data + 5)[], (q.data + 2)[])
+
+    q4 = q * 3
+    # should obey maxlen
+    assert_equal(q4.head, 2)
+    assert_equal(q4.tail, 1)
+    assert_equal(q4.capacity, 8)
+    assert_equal(q4.minlen, q.minlen)
+    assert_equal(q4.maxlen, q.maxlen)
+    assert_equal(q4.shrink, q.shrink)
+    # TODO - why the next line fails if it's put last in the test?
+    assert_equal((q4.data + 0)[], 3)
+    assert_equal((q4.data + 2)[], 3)
+
+
+fn test_impl_imul() raises:
+    l = List(1, 2, 3)
+
+    q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
+    q *= 0
+    assert_equal(q.head, 0)
+    assert_equal(q.tail, 0)
+    # resets capacity to minlen
+    assert_equal(q.capacity, 2)
+    assert_equal(q.minlen, 2)
+    assert_equal(q.maxlen, 7)
+    assert_equal(q.shrink, False)
+
+    q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
+    q *= 1
+    assert_equal(q.head, 0)
+    assert_equal(q.tail, len(q))
+    assert_equal(q.capacity, 4)
+    assert_equal(q.minlen, 2)
+    assert_equal(q.maxlen, 7)
+    assert_equal(q.shrink, False)
+    assert_equal((q.data + 0)[], 1)
+    assert_equal((q.data + 1)[], 2)
+    assert_equal((q.data + 2)[], 3)
+
+    q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
+    q *= 2
+    assert_equal(q.head, 0)
+    assert_equal(q.tail, 6)
+    assert_equal(q.capacity, 8)
+    assert_equal(q.minlen, 2)
+    assert_equal(q.maxlen, 7)
+    assert_equal(q.shrink, False)
+    assert_equal((q.data + 0)[], 1)
+    assert_equal((q.data + 5)[], 3)
+
+    q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
+    q *= 3
+    # should obey maxlen
+    assert_equal(q.head, 2)
+    assert_equal(q.tail, 1)
+    assert_equal(q.capacity, 8)
+    assert_equal(q.minlen, 2)
+    assert_equal(q.maxlen, 7)
+    assert_equal(q.shrink, False)
+    # TODO - why the next line fails if it's put last in the test?
+    assert_equal((q.data + 0)[], 3)
+    assert_equal((q.data + 2)[], 3)
+
+
 # ===----------------------------------------------------------------------===#
 # API Interface tests
 # ===----------------------------------------------------------------------===#
