@@ -592,8 +592,8 @@ struct Deque[ElementType: CollectionElement](
         if stop_normalized < 0:
             stop_normalized += len(self)
 
-        start_normalized = _clip(start_normalized, 0, len(self))
-        stop_normalized = _clip(stop_normalized, 0, len(self))
+        start_normalized = max(0, min(start_normalized, len(self)))
+        stop_normalized = max(0, min(stop_normalized, len(self)))
 
         for idx in range(start_normalized, stop_normalized):
             offset = (self.head + idx) & (self.capacity - 1)
@@ -876,7 +876,3 @@ struct _DequeIter[
     @always_inline
     fn __hasmore__(self) -> Bool:
         return self.__len__() > 0
-
-
-fn _clip(value: Int, start: Int, end: Int) -> Int:
-    return max(start, min(value, end))
