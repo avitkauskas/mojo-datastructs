@@ -7,7 +7,7 @@
 
 from bit import bit_ceil
 from collections import Optional
-from memory import UnsafePointer, Reference
+from memory import UnsafePointer
 
 
 # ===----------------------------------------------------------------------===#

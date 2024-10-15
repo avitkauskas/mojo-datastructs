@@ -86,6 +86,8 @@ fn test_impl_init_list() raises:
     assert_equal((q.data + 0)[], 0)
     assert_equal((q.data + 1)[], 1)
     assert_equal((q.data + 2)[], 2)
+    # avoid eager destruction
+    _ = q.data
 
 
 fn test_impl_init_list_args() raises:
@@ -95,6 +97,8 @@ fn test_impl_init_list_args() raises:
     assert_equal(q.capacity, 4)
     assert_equal((q.data + 1)[], 1)
     assert_equal((q.data + 2)[], 2)
+    # avoid eager destruction
+    _ = q.data
 
 
 fn test_impl_init_variadic() raises:
@@ -106,6 +110,8 @@ fn test_impl_init_variadic() raises:
     assert_equal((q.data + 0)[], 0)
     assert_equal((q.data + 1)[], 1)
     assert_equal((q.data + 2)[], 2)
+    # avoid eager destruction
+    _ = q.data
 
 
 fn test_impl_len() raises:
@@ -172,6 +178,8 @@ fn test_impl_append() raises:
     assert_equal((q.data + 1)[], 2)
     assert_equal((q.data + 2)[], 3)
     assert_equal((q.data + 3)[], 4)
+    # avoid eager destruction
+    _ = q.data
 
 
 fn test_impl_append_with_maxlen() raises:
@@ -195,6 +203,8 @@ fn test_impl_append_with_maxlen() raises:
     assert_equal((q.data + 1)[], 1)
     assert_equal((q.data + 2)[], 2)
     assert_equal((q.data + 3)[], 3)
+    # avoid eager destruction
+    _ = q.data
 
 
 fn test_impl_appendleft() raises:
@@ -243,6 +253,8 @@ fn test_impl_appendleft() raises:
     assert_equal((q.data + 1)[], 3)
     assert_equal((q.data + 2)[], 2)
     assert_equal((q.data + 3)[], 1)
+    # avoid eager destruction
+    _ = q.data
 
 
 fn test_impl_appendleft_with_maxlen() raises:
@@ -266,6 +278,8 @@ fn test_impl_appendleft_with_maxlen() raises:
     assert_equal((q.data + 0)[], 3)
     assert_equal((q.data + 1)[], 2)
     assert_equal((q.data + 2)[], 1)
+    # avoid eager destruction
+    _ = q.data
 
 
 fn test_impl_extend() raises:
@@ -290,6 +304,8 @@ fn test_impl_extend() raises:
     assert_equal((q.data + 3)[], 0)
     assert_equal((q.data + 4)[], 1)
     assert_equal((q.data + 5)[], 2)
+    # avoid eager destruction
+    _ = q.data
 
 
 fn test_impl_extendleft() raises:
@@ -316,6 +332,8 @@ fn test_impl_extendleft() raises:
     assert_equal((q.data + 7)[], 1)
     assert_equal((q.data + 0)[], 0)
     assert_equal((q.data + 1)[], 2)
+    # avoid eager destruction
+    _ = q.data
 
 
 fn test_impl_insert() raises:
@@ -340,6 +358,8 @@ fn test_impl_insert() raises:
     assert_equal(q.tail, 8)
     assert_equal((q.data + q.tail - 1)[], 8)
     assert_equal((q.data + q.tail - 2)[], 9)
+    # avoid eager destruction
+    _ = q.data
 
 
 fn test_impl_pop() raises:
@@ -430,6 +450,8 @@ fn test_impl_add() raises:
     assert_equal(q5.tail, 0)
     assert_equal((q5.data + 2)[], 3)
     assert_equal((q5.data + 31)[], 8)
+    # avoid eager destruction
+    _ = q5.data
 
     q6 = q4 + q3
     # has to inherit q4 properties
@@ -443,6 +465,8 @@ fn test_impl_add() raises:
     assert_equal(q6.tail, 32)
     assert_equal((q6.data + 0)[], 9)
     assert_equal((q6.data + 31)[], 16)
+    # avoid eager destruction
+    _ = q6.data
 
 
 fn test_impl_iadd() raises:
@@ -473,8 +497,10 @@ fn test_impl_iadd() raises:
     assert_equal(len(q2), 18)
     assert_equal(q2.head, 0)
     assert_equal(q2.tail, 18)
-    assert_equal(q2[0], 9)
-    assert_equal(q2[17], 16)
+    assert_equal((q2.data + 0)[], 9)
+    assert_equal((q2.data + 17)[], 16)
+    # avoid eager destruction
+    _ = q2.data
 
 
 fn test_impl_mul() raises:
@@ -499,6 +525,8 @@ fn test_impl_mul() raises:
     assert_equal((q2.data + 0)[], (q.data + 0)[])
     assert_equal((q2.data + 1)[], (q.data + 1)[])
     assert_equal((q2.data + 2)[], (q.data + 2)[])
+    # avoid eager destruction
+    _ = q2.data
 
     q3 = q * 2
     assert_equal(q3.head, 0)
@@ -508,6 +536,8 @@ fn test_impl_mul() raises:
     assert_equal(q3.shrink, q.shrink)
     assert_equal((q3.data + 0)[], (q.data + 0)[])
     assert_equal((q3.data + 5)[], (q.data + 2)[])
+    # avoid eager destruction
+    _ = q3.data
 
     q4 = q * 3
     # should obey maxlen
@@ -517,9 +547,10 @@ fn test_impl_mul() raises:
     assert_equal(q4.minlen, q.minlen)
     assert_equal(q4.maxlen, q.maxlen)
     assert_equal(q4.shrink, q.shrink)
-    # TODO - why the next line fails if it's put last in the test?
-    assert_equal((q4.data + 0)[], 3)
     assert_equal((q4.data + 2)[], 3)
+    assert_equal((q4.data + 0)[], 3)
+    # avoid eager destruction
+    _ = q4.data
 
 
 fn test_impl_imul() raises:
@@ -546,6 +577,8 @@ fn test_impl_imul() raises:
     assert_equal((q.data + 0)[], 1)
     assert_equal((q.data + 1)[], 2)
     assert_equal((q.data + 2)[], 3)
+    # avoid eager destruction
+    _ = q.data
 
     q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
     q *= 2
@@ -557,6 +590,8 @@ fn test_impl_imul() raises:
     assert_equal(q.shrink, False)
     assert_equal((q.data + 0)[], 1)
     assert_equal((q.data + 5)[], 3)
+    # avoid eager destruction
+    _ = q.data
 
     q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
     q *= 3
@@ -567,9 +602,10 @@ fn test_impl_imul() raises:
     assert_equal(q.minlen, 2)
     assert_equal(q.maxlen, 7)
     assert_equal(q.shrink, False)
-    # TODO - why the next line fails if it's put last in the test?
-    assert_equal((q.data + 0)[], 3)
     assert_equal((q.data + 2)[], 3)
+    assert_equal((q.data + 0)[], 3)
+    # avoid eager destruction
+    _ = q.data
 
 
 # ===----------------------------------------------------------------------===#
