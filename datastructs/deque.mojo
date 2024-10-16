@@ -67,13 +67,13 @@ struct Deque[ElementType: CollectionElement](
     fn __init__(
         inout self,
         *,
-        elements: Optional[List[ElementType]] = None,
+        owned elements: Optional[List[ElementType]] = None,
         capacity: Int = self.default_capacity,
         minlen: Int = self.default_capacity,
         maxlen: Int = -1,
         shrink: Bool = True,
     ):
-        """Constructs an empty deque.
+        """Constructs a deque.
 
         Args:
             elements: Optional list of initial deque elements.
