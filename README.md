@@ -1,6 +1,6 @@
 # Some missing data structures for Mojo
 
-> Tested on the Mojo nightly build `mojo 2024.10.1605 (06e18c99)`
+> Tested on the Mojo nightly build `mojo 2024.10.1619 (829ffb25)`
 
 ### Instructions
 
