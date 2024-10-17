@@ -9,6 +9,8 @@ from bit import bit_ceil
 from collections import Optional
 from memory import UnsafePointer
 
+from builtin._documentation import doc_private
+
 
 # ===----------------------------------------------------------------------===#
 # Deque
@@ -797,6 +799,7 @@ struct Deque[ElementType: CollectionElement](
                 self.head = (self.head - 1) & (self.capacity - 1)
                 (self.data + self.tail).move_pointee_into(self.data + self.head)
 
+    @doc_private
     fn _realloc(inout self, new_capacity: Int):
         """Relocates data to a new storage buffer.
 
@@ -833,6 +836,7 @@ struct Deque[ElementType: CollectionElement](
         self.capacity = new_capacity
 
 
+@doc_private
 @value
 struct _DequeIter[
     deque_mutability: Bool, //,
