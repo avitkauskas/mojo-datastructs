@@ -383,17 +383,19 @@ struct Deque[ElementType: CollectionElement](
         return (self.data + offset)[]
 
     @no_inline
-    fn format_to[
-        RepresentableElementType: RepresentableCollectionElement, //
-    ](self: Deque[RepresentableElementType], inout writer: Formatter):
-        """Writes `my_deque.__str__()` to a `Formatter`.
+    fn write_to[
+        RepresentableElementType: RepresentableCollectionElement,
+        WriterType: Writer, //
+    ](self: Deque[RepresentableElementType], inout writer: WriterType):
+        """Writes `my_deque.__str__()` to a `Writer`.
 
         Parameters:
             RepresentableElementType: The type of the Deque elements.
                 Must implement the trait `RepresentableCollectionElement`.
+            WriterType: A type conforming to the Writable trait.
 
         Args:
-            writer: The formatter to write to.
+            writer: The object to write to.
         """
         writer.write("Deque(")
         for i in range(len(self)):
@@ -430,8 +432,8 @@ struct Deque[ElementType: CollectionElement](
             A string representation of the deque.
         """
         output = String()
-        writer = output._unsafe_to_formatter()
-        self.format_to(writer)
+        # writer = output._unsafe_to_formatter()
+        self.write_to(output)
         return output^
 
     @no_inline
