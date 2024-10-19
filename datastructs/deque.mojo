@@ -432,7 +432,6 @@ struct Deque[ElementType: CollectionElement](
             A string representation of the deque.
         """
         output = String()
-        # writer = output._unsafe_to_formatter()
         self.write_to(output)
         return output^
 
