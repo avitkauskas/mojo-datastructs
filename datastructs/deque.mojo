@@ -3,7 +3,16 @@
 # Licensed under the MIT License.
 # ===----------------------------------------------------------------------=== #
 
-"""Defines the Deque type."""
+"""Defines the Deque type.
+
+You can import these APIs from the `collections` package.
+
+Examples:
+
+```mojo
+from collections import Deque
+```
+"""
 
 from bit import bit_ceil
 from collections import Optional
@@ -45,10 +54,10 @@ struct Deque[ElementType: CollectionElement](
     """The underlying storage for the deque."""
 
     var head: Int
-    """The index of the head: contains the first element of the deque."""
+    """The index of the head: points the first element of the deque."""
 
     var tail: Int
-    """The index of the tail: one behind the last element of the deque."""
+    """The index of the tail: points behind the last element of the deque."""
 
     var capacity: Int
     """The amount of elements that can fit in the deque without resizing it."""
@@ -78,7 +87,7 @@ struct Deque[ElementType: CollectionElement](
         """Constructs a deque.
 
         Args:
-            elements: Optional list of initial deque elements.
+            elements: The optional list of initial deque elements.
             capacity: The initial capacity of the deque.
             minlen: The minimum allowed capacity of the deque when shrinking.
             maxlen: The maximum allowed capacity of the deque when growing.
@@ -101,7 +110,7 @@ struct Deque[ElementType: CollectionElement](
             deque_capacity = min(deque_capacity, bit_ceil(maxlen))
 
         self.capacity = deque_capacity
-        self.data = UnsafePointer[ElementType].alloc(capacity)
+        self.data = UnsafePointer[ElementType].alloc(deque_capacity)
         self.head = 0
         self.tail = 0
         self.minlen = min_capacity
