@@ -194,7 +194,7 @@ struct Deque[ElementType: CollectionElement](
     fn __del__(owned self):
         """Destroys all elements in the deque and free its memory."""
         for i in range(len(self)):
-            offset = (self._head + i) & (self._capacity - 1)
+            offset = self._physical_index(self._head + i)
             (self._data + offset).destroy_pointee()
         self._data.free()
 
@@ -282,7 +282,7 @@ struct Deque[ElementType: CollectionElement](
         if len(self) != len(other):
             return False
         for i in range(len(self)):
-            offset_self = (self._head + i) & (self._capacity - 1)
+            offset_self = self._physical_index(self._head + i)
             offset_other = (other._head + i) & (other._capacity - 1)
             if (self._data + offset_self)[] != (other._data + offset_other)[]:
                 return False
@@ -323,7 +323,7 @@ struct Deque[ElementType: CollectionElement](
             True if the value is contained in the deque, False otherwise.
         """
         for i in range(len(self)):
-            offset = (self._head + i) & (self._capacity - 1)
+            offset = self._physical_index(self._head + i)
             if (self._data + offset)[] == value:
                 return True
         return False
@@ -392,7 +392,7 @@ struct Deque[ElementType: CollectionElement](
         if normalized_idx < 0:
             normalized_idx += len(self)
 
-        offset = (self._head + normalized_idx) & (self._capacity - 1)
+        offset = self._physical_index(self._head + normalized_idx)
         return (self._data + offset)[]
 
     @no_inline
@@ -412,7 +412,7 @@ struct Deque[ElementType: CollectionElement](
         """
         writer.write("Deque(")
         for i in range(len(self)):
-            offset = (self._head + i) & (self._capacity - 1)
+            offset = self._physical_index(self._head + i)
             writer.write(repr((self._data + offset)[]))
             if i < len(self) - 1:
                 writer.write(", ")
@@ -488,10 +488,10 @@ struct Deque[ElementType: CollectionElement](
         """
         if len(self) == self._maxlen:
             (self._data + self._head).destroy_pointee()
-            self._head = (self._head + 1) & (self._capacity - 1)
+            self._head = self._physical_index(self._head + 1)
 
         (self._data + self._tail).init_pointee_move(value^)
-        self._tail = (self._tail + 1) & (self._capacity - 1)
+        self._tail = self._physical_index(self._tail + 1)
 
         if self._head == self._tail:
             self._realloc(self._capacity << 1)
@@ -503,10 +503,10 @@ struct Deque[ElementType: CollectionElement](
             value: The value to append.
         """
         if len(self) == self._maxlen:
-            self._tail = (self._tail - 1) & (self._capacity - 1)
+            self._tail = self._physical_index(self._tail - 1)
             (self._data + self._tail).destroy_pointee()
 
-        self._head = (self._head - 1) & (self._capacity - 1)
+        self._head = self._physical_index(self._head - 1)
         (self._data + self._head).init_pointee_move(value^)
 
         if self._head == self._tail:
@@ -518,7 +518,7 @@ struct Deque[ElementType: CollectionElement](
         Resets the underlying storage capacity to `_min_capacity`.
         """
         for i in range(len(self)):
-            offset = (self._head + i) & (self._capacity - 1)
+            offset = self._physical_index(self._head + i)
             (self._data + offset).destroy_pointee()
         self._data.free()
         self._capacity = self._min_capacity
@@ -543,7 +543,7 @@ struct Deque[ElementType: CollectionElement](
         """
         count = 0
         for i in range(len(self)):
-            offset = (self._head + i) & (self._capacity - 1)
+            offset = self._physical_index(self._head + i)
             if (self._data + offset)[] == value:
                 count += 1
         return count
@@ -612,7 +612,7 @@ struct Deque[ElementType: CollectionElement](
         stop_normalized = max(0, min(stop_normalized, len(self)))
 
         for idx in range(start_normalized, stop_normalized):
-            offset = (self._head + idx) & (self._capacity - 1)
+            offset = self._physical_index(self._head + idx)
             if (self._data + offset)[] == value:
                 return idx
         raise "ValueError: Given element is not in deque"
@@ -645,18 +645,18 @@ struct Deque[ElementType: CollectionElement](
 
         if normalized_idx <= deque_len // 2:
             for i in range(normalized_idx):
-                src = (self._head + i) & (self._capacity - 1)
-                dst = (src - 1) & (self._capacity - 1)
+                src = self._physical_index(self._head + i)
+                dst = self._physical_index(src - 1)
                 (self._data + src).move_pointee_into(self._data + dst)
-            self._head = (self._head - 1) & (self._capacity - 1)
+            self._head = self._physical_index(self._head - 1)
         else:
             for i in range(deque_len - normalized_idx):
-                dst = (self._tail - i) & (self._capacity - 1)
-                src = (dst - 1) & (self._capacity - 1)
+                dst = self._physical_index(self._tail - i)
+                src = self._physical_index(dst - 1)
                 (self._data + src).move_pointee_into(self._data + dst)
-            self._tail = (self._tail + 1) & (self._capacity - 1)
+            self._tail = self._physical_index(self._tail + 1)
 
-        offset = (self._head + normalized_idx) & (self._capacity - 1)
+        offset = self._physical_index(self._head + normalized_idx)
         (self._data + offset).init_pointee_move(value^)
 
         if self._head == self._tail:
@@ -678,22 +678,22 @@ struct Deque[ElementType: CollectionElement](
         """
         deque_len = len(self)
         for idx in range(deque_len):
-            offset = (self._head + idx) & (self._capacity - 1)
+            offset = self._physical_index(self._head + idx)
             if (self._data + offset)[] == value:
                 (self._data + offset).destroy_pointee()
 
                 if idx < deque_len // 2:
                     for i in reversed(range(idx)):
-                        src = (self._head + i) & (self._capacity - 1)
-                        dst = (src + 1) & (self._capacity - 1)
+                        src = self._physical_index(self._head + i)
+                        dst = self._physical_index(src + 1)
                         (self._data + src).move_pointee_into(self._data + dst)
-                    self._head = (self._head + 1) & (self._capacity - 1)
+                    self._head = self._physical_index(self._head + 1)
                 else:
                     for i in range(idx + 1, deque_len):
-                        src = (self._head + i) & (self._capacity - 1)
-                        dst = (src - 1) & (self._capacity - 1)
+                        src = self._physical_index(self._head + i)
+                        dst = self._physical_index(src - 1)
                         (self._data + src).move_pointee_into(self._data + dst)
-                    self._tail = (self._tail - 1) & (self._capacity - 1)
+                    self._tail = self._physical_index(self._tail - 1)
 
                 if (
                     self._shrink
@@ -718,7 +718,7 @@ struct Deque[ElementType: CollectionElement](
         if self._head == self._tail:
             raise "IndexError: Deque is empty"
 
-        return (self._data + ((self._tail - 1) & (self._capacity - 1)))[]
+        return (self._data + self._physical_index(self._tail - 1))[]
 
     fn peekleft(self) raises -> ElementType:
         """Inspect the first (leftmost) element of the deque without removing it.
@@ -746,7 +746,7 @@ struct Deque[ElementType: CollectionElement](
         if self._head == self._tail:
             raise "IndexError: Deque is empty"
 
-        self._tail = (self._tail - 1) & (self._capacity - 1)
+        self._tail = self._physical_index(self._tail - 1)
         element = (self._data + self._tail).take_pointee()
 
         if (
@@ -771,7 +771,7 @@ struct Deque[ElementType: CollectionElement](
             raise "IndexError: Deque is empty"
 
         element = (self._data + self._head).take_pointee()
-        self._head = (self._head + 1) & (self._capacity - 1)
+        self._head = self._physical_index(self._head + 1)
 
         if (
             self._shrink
@@ -786,8 +786,8 @@ struct Deque[ElementType: CollectionElement](
         """Reverses the elements of the deque in-place."""
         last = self._head + len(self) - 1
         for i in range(len(self) // 2):
-            src = (self._head + i) & (self._capacity - 1)
-            dst = (last - i) & (self._capacity - 1)
+            src = self._physical_index(self._head + i)
+            dst = self._physical_index(last - i)
             tmp = (self._data + dst).take_pointee()
             (self._data + src).move_pointee_into(self._data + dst)
             (self._data + src).init_pointee_move(tmp^)
@@ -805,13 +805,27 @@ struct Deque[ElementType: CollectionElement](
         if n < 0:
             for _ in range(-n):
                 (self._data + self._head).move_pointee_into(self._data + self._tail)
-                self._tail = (self._tail + 1) & (self._capacity - 1)
-                self._head = (self._head + 1) & (self._capacity - 1)
+                self._tail = self._physical_index(self._tail + 1)
+                self._head = self._physical_index(self._head + 1)
         else:
             for _ in range(n):
-                self._tail = (self._tail - 1) & (self._capacity - 1)
-                self._head = (self._head - 1) & (self._capacity - 1)
+                self._tail = self._physical_index(self._tail - 1)
+                self._head = self._physical_index(self._head - 1)
                 (self._data + self._tail).move_pointee_into(self._data + self._head)
+
+    @doc_private
+    @always_inline
+    fn _physical_index(self, logical_index: Int) -> Int:
+        """Calculates the physical index in the circular buffer.
+
+        Args:
+            logical_index: The logical index, which may fall outside the physical bounds
+                of the buffer and needs to be wrapped around.
+
+        The size of the underlying buffer is always a power of two, allowing the use of
+        the more efficient bitwise `&` operation instead of the modulo `%` operator.
+        """
+        return logical_index & (self._capacity - 1)
 
     @doc_private
     fn _realloc(inout self, new_capacity: Int):
