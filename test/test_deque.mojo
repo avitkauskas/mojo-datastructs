@@ -10,113 +10,113 @@ from datastructs import Deque
 fn test_impl_init_default() raises:
     q = Deque[Int]()
 
-    assert_equal(q.capacity, q.default_capacity)
-    assert_equal(q.minlen, q.default_capacity)
-    assert_equal(q.maxlen, -1)
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 0)
-    assert_equal(q.shrink, True)
+    assert_equal(q._capacity, q.default_capacity)
+    assert_equal(q._min_capacity, q.default_capacity)
+    assert_equal(q._maxlen, -1)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 0)
+    assert_equal(q._shrink, True)
 
 
 fn test_impl_init_capacity() raises:
     q = Deque[Int](capacity=-10)
-    assert_equal(q.capacity, q.default_capacity)
-    assert_equal(q.minlen, q.default_capacity)
+    assert_equal(q._capacity, q.default_capacity)
+    assert_equal(q._min_capacity, q.default_capacity)
 
     q = Deque[Int](capacity=0)
-    assert_equal(q.capacity, q.default_capacity)
-    assert_equal(q.minlen, q.default_capacity)
+    assert_equal(q._capacity, q.default_capacity)
+    assert_equal(q._min_capacity, q.default_capacity)
 
     q = Deque[Int](capacity=10)
-    assert_equal(q.capacity, 16)
-    assert_equal(q.minlen, q.default_capacity)
+    assert_equal(q._capacity, 16)
+    assert_equal(q._min_capacity, q.default_capacity)
 
     q = Deque[Int](capacity=100)
-    assert_equal(q.capacity, 128)
-    assert_equal(q.minlen, q.default_capacity)
+    assert_equal(q._capacity, 128)
+    assert_equal(q._min_capacity, q.default_capacity)
 
 
-fn test_impl_init_minlen() raises:
-    q = Deque[Int](minlen=-10)
-    assert_equal(q.minlen, q.default_capacity)
-    assert_equal(q.capacity, q.default_capacity)
+fn test_impl_init_min_capacity() raises:
+    q = Deque[Int](min_capacity=-10)
+    assert_equal(q._min_capacity, q.default_capacity)
+    assert_equal(q._capacity, q.default_capacity)
 
-    q = Deque[Int](minlen=0)
-    assert_equal(q.minlen, q.default_capacity)
-    assert_equal(q.capacity, q.default_capacity)
+    q = Deque[Int](min_capacity=0)
+    assert_equal(q._min_capacity, q.default_capacity)
+    assert_equal(q._capacity, q.default_capacity)
 
-    q = Deque[Int](minlen=10)
-    assert_equal(q.minlen, 16)
-    assert_equal(q.capacity, q.default_capacity)
+    q = Deque[Int](min_capacity=10)
+    assert_equal(q._min_capacity, 16)
+    assert_equal(q._capacity, q.default_capacity)
 
-    q = Deque[Int](minlen=100)
-    assert_equal(q.minlen, 128)
-    assert_equal(q.capacity, q.default_capacity)
+    q = Deque[Int](min_capacity=100)
+    assert_equal(q._min_capacity, 128)
+    assert_equal(q._capacity, q.default_capacity)
 
 
 fn test_impl_init_maxlen() raises:
     q = Deque[Int](maxlen=-10)
-    assert_equal(q.maxlen, -1)
-    assert_equal(q.capacity, q.default_capacity)
+    assert_equal(q._maxlen, -1)
+    assert_equal(q._capacity, q.default_capacity)
 
     q = Deque[Int](maxlen=0)
-    assert_equal(q.maxlen, -1)
-    assert_equal(q.capacity, q.default_capacity)
+    assert_equal(q._maxlen, -1)
+    assert_equal(q._capacity, q.default_capacity)
 
     q = Deque[Int](maxlen=10)
-    assert_equal(q.maxlen, 10)
-    assert_equal(q.capacity, 16)
+    assert_equal(q._maxlen, 10)
+    assert_equal(q._capacity, 16)
 
     q = Deque[Int](maxlen=100)
-    assert_equal(q.maxlen, 100)
-    assert_equal(q.capacity, q.default_capacity)
+    assert_equal(q._maxlen, 100)
+    assert_equal(q._capacity, q.default_capacity)
 
 
 fn test_impl_init_shrink() raises:
     q = Deque[Int](shrink=False)
-    assert_equal(q.shrink, False)
-    assert_equal(q.capacity, q.default_capacity)
+    assert_equal(q._shrink, False)
+    assert_equal(q._capacity, q.default_capacity)
 
 
 fn test_impl_init_list() raises:
     q = Deque(elements=List(0, 1, 2))
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 3)
-    assert_equal(q.capacity, q.default_capacity)
-    assert_equal((q.data + 0)[], 0)
-    assert_equal((q.data + 1)[], 1)
-    assert_equal((q.data + 2)[], 2)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 3)
+    assert_equal(q._capacity, q.default_capacity)
+    assert_equal((q._data + 0)[], 0)
+    assert_equal((q._data + 1)[], 1)
+    assert_equal((q._data + 2)[], 2)
 
 
 fn test_impl_init_list_args() raises:
     q = Deque(elements=List(0, 1, 2), maxlen=2, capacity=10)
-    assert_equal(q.head, 1)
-    assert_equal(q.tail, 3)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 1)[], 1)
-    assert_equal((q.data + 2)[], 2)
+    assert_equal(q._head, 1)
+    assert_equal(q._tail, 3)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 1)[], 1)
+    assert_equal((q._data + 2)[], 2)
 
 
 fn test_impl_init_variadic() raises:
     q = Deque(0, 1, 2)
 
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 3)
-    assert_equal(q.capacity, q.default_capacity)
-    assert_equal((q.data + 0)[], 0)
-    assert_equal((q.data + 1)[], 1)
-    assert_equal((q.data + 2)[], 2)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 3)
+    assert_equal(q._capacity, q.default_capacity)
+    assert_equal((q._data + 0)[], 0)
+    assert_equal((q._data + 1)[], 1)
+    assert_equal((q._data + 2)[], 2)
 
 
 fn test_impl_len() raises:
     q = Deque[Int]()
 
-    q.head = 0
-    q.tail = 10
+    q._head = 0
+    q._tail = 10
     assert_equal(len(q), 10)
 
-    q.head = q.default_capacity - 5
-    q.tail = 5
+    q._head = q.default_capacity - 5
+    q._tail = 5
     assert_equal(len(q), 10)
 
 
@@ -124,7 +124,7 @@ fn test_impl_bool() raises:
     q = Deque[Int]()
     assert_false(q)
 
-    q.tail = 1
+    q._tail = 1
     assert_true(q)
 
 
@@ -132,69 +132,69 @@ fn test_impl_append() raises:
     q = Deque[Int](capacity=2)
 
     q.append(0)
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 1)
-    assert_equal(q.capacity, 2)
-    assert_equal((q.data + 0)[], 0)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 1)
+    assert_equal(q._capacity, 2)
+    assert_equal((q._data + 0)[], 0)
 
     q.append(1)
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 2)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 0)[], 0)
-    assert_equal((q.data + 1)[], 1)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 2)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 0)[], 0)
+    assert_equal((q._data + 1)[], 1)
 
     q.append(2)
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 3)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 0)[], 0)
-    assert_equal((q.data + 1)[], 1)
-    assert_equal((q.data + 2)[], 2)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 3)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 0)[], 0)
+    assert_equal((q._data + 1)[], 1)
+    assert_equal((q._data + 2)[], 2)
 
     # simulate popleft()
-    q.head += 1
+    q._head += 1
     q.append(3)
-    assert_equal(q.head, 1)
+    assert_equal(q._head, 1)
     # tail wrapped to the front
-    assert_equal(q.tail, 0)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 1)[], 1)
-    assert_equal((q.data + 2)[], 2)
-    assert_equal((q.data + 3)[], 3)
+    assert_equal(q._tail, 0)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 1)[], 1)
+    assert_equal((q._data + 2)[], 2)
+    assert_equal((q._data + 3)[], 3)
 
     q.append(4)
     # re-allocated buffer and moved all elements
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 4)
-    assert_equal(q.capacity, 8)
-    assert_equal((q.data + 0)[], 1)
-    assert_equal((q.data + 1)[], 2)
-    assert_equal((q.data + 2)[], 3)
-    assert_equal((q.data + 3)[], 4)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 4)
+    assert_equal(q._capacity, 8)
+    assert_equal((q._data + 0)[], 1)
+    assert_equal((q._data + 1)[], 2)
+    assert_equal((q._data + 2)[], 3)
+    assert_equal((q._data + 3)[], 4)
 
 
 fn test_impl_append_with_maxlen() raises:
     q = Deque[Int](maxlen=3)
 
-    assert_equal(q.maxlen, 3)
-    assert_equal(q.capacity, 4)
+    assert_equal(q._maxlen, 3)
+    assert_equal(q._capacity, 4)
 
     q.append(0)
     q.append(1)
     q.append(2)
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 3)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 3)
 
     q.append(3)
     # first popped the leftmost element
     # so there was no re-allocation of buffer
-    assert_equal(q.head, 1)
-    assert_equal(q.tail, 0)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 1)[], 1)
-    assert_equal((q.data + 2)[], 2)
-    assert_equal((q.data + 3)[], 3)
+    assert_equal(q._head, 1)
+    assert_equal(q._tail, 0)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 1)[], 1)
+    assert_equal((q._data + 2)[], 2)
+    assert_equal((q._data + 3)[], 3)
 
 
 fn test_impl_appendleft() raises:
@@ -202,70 +202,70 @@ fn test_impl_appendleft() raises:
 
     q.appendleft(0)
     # head wrapped to the end of the buffer
-    assert_equal(q.head, 1)
-    assert_equal(q.tail, 0)
-    assert_equal(q.capacity, 2)
-    assert_equal((q.data + 1)[], 0)
+    assert_equal(q._head, 1)
+    assert_equal(q._tail, 0)
+    assert_equal(q._capacity, 2)
+    assert_equal((q._data + 1)[], 0)
 
     q.appendleft(1)
     # re-allocated buffer and moved all elements
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 2)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 0)[], 1)
-    assert_equal((q.data + 1)[], 0)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 2)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 0)[], 1)
+    assert_equal((q._data + 1)[], 0)
 
     q.appendleft(2)
     # head wrapped to the end of the buffer
-    assert_equal(q.head, 3)
-    assert_equal(q.tail, 2)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 3)[], 2)
-    assert_equal((q.data + 0)[], 1)
-    assert_equal((q.data + 1)[], 0)
+    assert_equal(q._head, 3)
+    assert_equal(q._tail, 2)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 3)[], 2)
+    assert_equal((q._data + 0)[], 1)
+    assert_equal((q._data + 1)[], 0)
 
     # simulate pop()
-    q.tail -= 1
+    q._tail -= 1
     q.appendleft(3)
-    assert_equal(q.head, 2)
-    assert_equal(q.tail, 1)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 2)[], 3)
-    assert_equal((q.data + 3)[], 2)
-    assert_equal((q.data + 0)[], 1)
+    assert_equal(q._head, 2)
+    assert_equal(q._tail, 1)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 2)[], 3)
+    assert_equal((q._data + 3)[], 2)
+    assert_equal((q._data + 0)[], 1)
 
     q.appendleft(4)
     # re-allocated buffer and moved all elements
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 4)
-    assert_equal(q.capacity, 8)
-    assert_equal((q.data + 0)[], 4)
-    assert_equal((q.data + 1)[], 3)
-    assert_equal((q.data + 2)[], 2)
-    assert_equal((q.data + 3)[], 1)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 4)
+    assert_equal(q._capacity, 8)
+    assert_equal((q._data + 0)[], 4)
+    assert_equal((q._data + 1)[], 3)
+    assert_equal((q._data + 2)[], 2)
+    assert_equal((q._data + 3)[], 1)
 
 
 fn test_impl_appendleft_with_maxlen() raises:
     q = Deque[Int](maxlen=3)
 
-    assert_equal(q.maxlen, 3)
-    assert_equal(q.capacity, 4)
+    assert_equal(q._maxlen, 3)
+    assert_equal(q._capacity, 4)
 
     q.appendleft(0)
     q.appendleft(1)
     q.appendleft(2)
-    assert_equal(q.head, 1)
-    assert_equal(q.tail, 0)
+    assert_equal(q._head, 1)
+    assert_equal(q._tail, 0)
 
     q.appendleft(3)
     # first popped the rightmost element
     # so there was no re-allocation of buffer
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 3)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 0)[], 3)
-    assert_equal((q.data + 1)[], 2)
-    assert_equal((q.data + 2)[], 1)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 3)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 0)[], 3)
+    assert_equal((q._data + 1)[], 2)
+    assert_equal((q._data + 2)[], 1)
 
 
 fn test_impl_extend() raises:
@@ -273,23 +273,23 @@ fn test_impl_extend() raises:
     lst = List[Int](0, 1, 2)
 
     q.extend(lst)
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 3)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 0)[], 0)
-    assert_equal((q.data + 1)[], 1)
-    assert_equal((q.data + 2)[], 2)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 3)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 0)[], 0)
+    assert_equal((q._data + 1)[], 1)
+    assert_equal((q._data + 2)[], 2)
 
     q.extend(lst)
     # re-allocated buffer after the first append
     # then poppedleft the first 2 elements
-    assert_equal(q.capacity, 8)
-    assert_equal(q.head, 2)
-    assert_equal(q.tail, 6)
-    assert_equal((q.data + 2)[], 2)
-    assert_equal((q.data + 3)[], 0)
-    assert_equal((q.data + 4)[], 1)
-    assert_equal((q.data + 5)[], 2)
+    assert_equal(q._capacity, 8)
+    assert_equal(q._head, 2)
+    assert_equal(q._tail, 6)
+    assert_equal((q._data + 2)[], 2)
+    assert_equal((q._data + 3)[], 0)
+    assert_equal((q._data + 4)[], 1)
+    assert_equal((q._data + 5)[], 2)
 
 
 fn test_impl_extendleft() raises:
@@ -298,276 +298,276 @@ fn test_impl_extendleft() raises:
 
     q.extendleft(lst)
     # head wrapped to the end of then buffer
-    assert_equal(q.head, 1)
-    assert_equal(q.tail, 0)
-    assert_equal(q.capacity, 4)
-    assert_equal((q.data + 1)[], 2)
-    assert_equal((q.data + 2)[], 1)
-    assert_equal((q.data + 3)[], 0)
+    assert_equal(q._head, 1)
+    assert_equal(q._tail, 0)
+    assert_equal(q._capacity, 4)
+    assert_equal((q._data + 1)[], 2)
+    assert_equal((q._data + 2)[], 1)
+    assert_equal((q._data + 3)[], 0)
 
     q.extendleft(lst)
     # re-allocated buffer after the first appendlef
     # then popped the last 2 elements
     # head wrapped to the end of then buffer
-    assert_equal(q.capacity, 8)
-    assert_equal(q.head, 6)
-    assert_equal(q.tail, 2)
-    assert_equal((q.data + 6)[], 2)
-    assert_equal((q.data + 7)[], 1)
-    assert_equal((q.data + 0)[], 0)
-    assert_equal((q.data + 1)[], 2)
+    assert_equal(q._capacity, 8)
+    assert_equal(q._head, 6)
+    assert_equal(q._tail, 2)
+    assert_equal((q._data + 6)[], 2)
+    assert_equal((q._data + 7)[], 1)
+    assert_equal((q._data + 0)[], 0)
+    assert_equal((q._data + 1)[], 2)
 
 
 fn test_impl_insert() raises:
     q = Deque[Int](0, 1, 2, 3, 4, 5)
 
     q.insert(0, 6)
-    assert_equal(q.head, q.default_capacity - 1)
-    assert_equal((q.data + q.head)[], 6)
-    assert_equal((q.data + 0)[], 0)
+    assert_equal(q._head, q.default_capacity - 1)
+    assert_equal((q._data + q._head)[], 6)
+    assert_equal((q._data + 0)[], 0)
 
     q.insert(1, 7)
-    assert_equal(q.head, q.default_capacity - 2)
-    assert_equal((q.data + q.head + 0)[], 6)
-    assert_equal((q.data + q.head + 1)[], 7)
+    assert_equal(q._head, q.default_capacity - 2)
+    assert_equal((q._data + q._head + 0)[], 6)
+    assert_equal((q._data + q._head + 1)[], 7)
 
     q.insert(8, 8)
-    assert_equal(q.tail, 7)
-    assert_equal((q.data + q.tail - 1)[], 8)
-    assert_equal((q.data + q.tail - 2)[], 5)
+    assert_equal(q._tail, 7)
+    assert_equal((q._data + q._tail - 1)[], 8)
+    assert_equal((q._data + q._tail - 2)[], 5)
 
     q.insert(8, 9)
-    assert_equal(q.tail, 8)
-    assert_equal((q.data + q.tail - 1)[], 8)
-    assert_equal((q.data + q.tail - 2)[], 9)
+    assert_equal(q._tail, 8)
+    assert_equal((q._data + q._tail - 1)[], 8)
+    assert_equal((q._data + q._tail - 2)[], 9)
 
 
 fn test_impl_pop() raises:
-    q = Deque[Int](capacity=2, minlen=2)
+    q = Deque[Int](capacity=2, min_capacity=2)
     with assert_raises():
         _ = q.pop()
 
     q.append(1)
     q.appendleft(2)
-    assert_equal(q.capacity, 4)
+    assert_equal(q._capacity, 4)
     assert_equal(q.pop(), 1)
     assert_equal(len(q), 1)
     assert_equal(q[0], 2)
-    assert_equal(q.capacity, 2)
+    assert_equal(q._capacity, 2)
 
 
 fn test_popleft() raises:
-    q = Deque[Int](capacity=2, minlen=2)
-    assert_equal(q.capacity, 2)
+    q = Deque[Int](capacity=2, min_capacity=2)
+    assert_equal(q._capacity, 2)
     with assert_raises():
         _ = q.popleft()
 
     q.appendleft(1)
     q.append(2)
-    assert_equal(q.capacity, 4)
+    assert_equal(q._capacity, 4)
     assert_equal(q.popleft(), 1)
     assert_equal(len(q), 1)
     assert_equal(q[0], 2)
-    assert_equal(q.capacity, 2)
+    assert_equal(q._capacity, 2)
 
 
 fn test_impl_clear() raises:
     q = Deque[Int](capacity=2)
     q.append(1)
-    assert_equal(q.tail, 1)
+    assert_equal(q._tail, 1)
 
     q.clear()
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 0)
-    assert_equal(q.capacity, q.minlen)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 0)
+    assert_equal(q._capacity, q._min_capacity)
 
 
 fn test_impl_add() raises:
     l1 = List(1, 2, 3, 4, 5, 6, 7, 8)
     l2 = List(9, 10, 11, 12, 13, 14, 15, 16)
     q1 = Deque(elements=l1, capacity=20, maxlen=30)
-    q2 = Deque(elements=l2, minlen=200, shrink=False)
+    q2 = Deque(elements=l2, min_capacity=200, shrink=False)
 
-    assert_equal(q1.capacity, 32)
-    assert_equal(q1.maxlen, 30)
-    assert_equal(q2.capacity, 64)
-    assert_equal(q2.minlen, 256)
+    assert_equal(q1._capacity, 32)
+    assert_equal(q1._maxlen, 30)
+    assert_equal(q2._capacity, 64)
+    assert_equal(q2._min_capacity, 256)
 
     q3 = q1 + q2
     # has to inherit q1 properties
-    assert_equal(q3.capacity, 32)
-    assert_equal(q3.minlen, 64)
-    assert_equal(q3.maxlen, 30)
-    assert_equal(q3.shrink, True)
-    assert_equal(q3.head, 0)
-    assert_equal(q3.tail, 16)
+    assert_equal(q3._capacity, 32)
+    assert_equal(q3._min_capacity, 64)
+    assert_equal(q3._maxlen, 30)
+    assert_equal(q3._shrink, True)
+    assert_equal(q3._head, 0)
+    assert_equal(q3._tail, 16)
     for i in range(len(q3)):
-        assert_equal((q3.data + i)[], 1 + i)
+        assert_equal((q3._data + i)[], 1 + i)
 
     q4 = q2 + q1
     # has to inherit q2 properties
-    assert_equal(q4.capacity, 64)
-    assert_equal(q4.minlen, 256)
-    assert_equal(q4.maxlen, -1)
-    assert_equal(q4.shrink, False)
-    assert_equal(q4.head, 0)
-    assert_equal(q4.tail, 16)
+    assert_equal(q4._capacity, 64)
+    assert_equal(q4._min_capacity, 256)
+    assert_equal(q4._maxlen, -1)
+    assert_equal(q4._shrink, False)
+    assert_equal(q4._head, 0)
+    assert_equal(q4._tail, 16)
     mid_len = len(q4) // 2
     for i in range(mid_len):
-        assert_equal((q4.data + i)[], 9 + i)
+        assert_equal((q4._data + i)[], 9 + i)
     for i in range(mid_len, len(q4)):
-        assert_equal((q4.data + i)[], i - 7)
+        assert_equal((q4._data + i)[], i - 7)
 
     q5 = q3 + q4
     # has to inherit q3 properties
-    assert_equal(q5.capacity, 32)
-    assert_equal(q5.minlen, 64)
-    assert_equal(q5.maxlen, 30)
-    assert_equal(q5.shrink, True)
+    assert_equal(q5._capacity, 32)
+    assert_equal(q5._min_capacity, 64)
+    assert_equal(q5._maxlen, 30)
+    assert_equal(q5._shrink, True)
     # has to obey to maxlen
     assert_equal(len(q5), 30)
-    assert_equal(q5.head, 2)
-    assert_equal(q5.tail, 0)
-    assert_equal((q5.data + 2)[], 3)
-    assert_equal((q5.data + 31)[], 8)
+    assert_equal(q5._head, 2)
+    assert_equal(q5._tail, 0)
+    assert_equal((q5._data + 2)[], 3)
+    assert_equal((q5._data + 31)[], 8)
 
     q6 = q4 + q3
     # has to inherit q4 properties
-    assert_equal(q6.capacity, 64)
-    assert_equal(q6.minlen, 256)
-    assert_equal(q6.maxlen, -1)
-    assert_equal(q6.shrink, False)
+    assert_equal(q6._capacity, 64)
+    assert_equal(q6._min_capacity, 256)
+    assert_equal(q6._maxlen, -1)
+    assert_equal(q6._shrink, False)
     # has to obey to maxlen
     assert_equal(len(q6), 32)
-    assert_equal(q6.head, 0)
-    assert_equal(q6.tail, 32)
-    assert_equal((q6.data + 0)[], 9)
-    assert_equal((q6.data + 31)[], 16)
+    assert_equal(q6._head, 0)
+    assert_equal(q6._tail, 32)
+    assert_equal((q6._data + 0)[], 9)
+    assert_equal((q6._data + 31)[], 16)
 
 
 fn test_impl_iadd() raises:
     l1 = List(1, 2, 3, 4, 5, 6, 7, 8)
     l2 = List(9, 10, 11, 12, 13, 14, 15, 16)
     q1 = Deque(elements=l1, maxlen=10)
-    q2 = Deque(elements=l2, minlen=200, shrink=False)
+    q2 = Deque(elements=l2, min_capacity=200, shrink=False)
 
     q1 += q2
     # has to keep q1 properties
-    assert_equal(q1.capacity, 16)
-    assert_equal(q1.minlen, 64)
-    assert_equal(q1.maxlen, 10)
-    assert_equal(q1.shrink, True)
+    assert_equal(q1._capacity, 16)
+    assert_equal(q1._min_capacity, 64)
+    assert_equal(q1._maxlen, 10)
+    assert_equal(q1._shrink, True)
     # has to obey maxlen
     assert_equal(len(q1), 10)
-    assert_equal(q1.head, 6)
-    assert_equal(q1.tail, 0)
+    assert_equal(q1._head, 6)
+    assert_equal(q1._tail, 0)
     for i in range(len(q1)):
         assert_equal(q1[i], 7 + i)
 
     q2 += q1
     # has to keep q2 properties
-    assert_equal(q2.capacity, 64)
-    assert_equal(q2.minlen, 256)
-    assert_equal(q2.maxlen, -1)
-    assert_equal(q2.shrink, False)
+    assert_equal(q2._capacity, 64)
+    assert_equal(q2._min_capacity, 256)
+    assert_equal(q2._maxlen, -1)
+    assert_equal(q2._shrink, False)
     assert_equal(len(q2), 18)
-    assert_equal(q2.head, 0)
-    assert_equal(q2.tail, 18)
-    assert_equal((q2.data + 0)[], 9)
-    assert_equal((q2.data + 17)[], 16)
+    assert_equal(q2._head, 0)
+    assert_equal(q2._tail, 18)
+    assert_equal((q2._data + 0)[], 9)
+    assert_equal((q2._data + 17)[], 16)
 
 
 fn test_impl_mul() raises:
     l = List(1, 2, 3)
-    q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
+    q = Deque(elements=l, capacity=3, min_capacity=2, maxlen=7, shrink=False)
 
     q1 = q * 0
-    assert_equal(q1.head, 0)
-    assert_equal(q1.tail, 0)
-    assert_equal(q1.capacity, q.minlen)
-    assert_equal(q1.minlen, q.minlen)
-    assert_equal(q1.maxlen, q.maxlen)
-    assert_equal(q1.shrink, q.shrink)
+    assert_equal(q1._head, 0)
+    assert_equal(q1._tail, 0)
+    assert_equal(q1._capacity, q._min_capacity)
+    assert_equal(q1._min_capacity, q._min_capacity)
+    assert_equal(q1._maxlen, q._maxlen)
+    assert_equal(q1._shrink, q._shrink)
 
     q2 = q * 1
-    assert_equal(q2.head, 0)
-    assert_equal(q2.tail, len(q))
-    assert_equal(q2.capacity, q.capacity)
-    assert_equal(q2.minlen, q.minlen)
-    assert_equal(q2.maxlen, q.maxlen)
-    assert_equal(q2.shrink, q.shrink)
-    assert_equal((q2.data + 0)[], (q.data + 0)[])
-    assert_equal((q2.data + 1)[], (q.data + 1)[])
-    assert_equal((q2.data + 2)[], (q.data + 2)[])
+    assert_equal(q2._head, 0)
+    assert_equal(q2._tail, len(q))
+    assert_equal(q2._capacity, q._capacity)
+    assert_equal(q2._min_capacity, q._min_capacity)
+    assert_equal(q2._maxlen, q._maxlen)
+    assert_equal(q2._shrink, q._shrink)
+    assert_equal((q2._data + 0)[], (q._data + 0)[])
+    assert_equal((q2._data + 1)[], (q._data + 1)[])
+    assert_equal((q2._data + 2)[], (q._data + 2)[])
 
     q3 = q * 2
-    assert_equal(q3.head, 0)
-    assert_equal(q3.tail, 2 * len(q))
-    assert_equal(q3.minlen, q.minlen)
-    assert_equal(q3.maxlen, q.maxlen)
-    assert_equal(q3.shrink, q.shrink)
-    assert_equal((q3.data + 0)[], (q.data + 0)[])
-    assert_equal((q3.data + 5)[], (q.data + 2)[])
+    assert_equal(q3._head, 0)
+    assert_equal(q3._tail, 2 * len(q))
+    assert_equal(q3._min_capacity, q._min_capacity)
+    assert_equal(q3._maxlen, q._maxlen)
+    assert_equal(q3._shrink, q._shrink)
+    assert_equal((q3._data + 0)[], (q._data + 0)[])
+    assert_equal((q3._data + 5)[], (q._data + 2)[])
 
     q4 = q * 3
     # should obey maxlen
-    assert_equal(q4.head, 2)
-    assert_equal(q4.tail, 1)
-    assert_equal(q4.capacity, 8)
-    assert_equal(q4.minlen, q.minlen)
-    assert_equal(q4.maxlen, q.maxlen)
-    assert_equal(q4.shrink, q.shrink)
-    assert_equal((q4.data + 2)[], 3)
-    assert_equal((q4.data + 0)[], 3)
+    assert_equal(q4._head, 2)
+    assert_equal(q4._tail, 1)
+    assert_equal(q4._capacity, 8)
+    assert_equal(q4._min_capacity, q._min_capacity)
+    assert_equal(q4._maxlen, q._maxlen)
+    assert_equal(q4._shrink, q._shrink)
+    assert_equal((q4._data + 2)[], 3)
+    assert_equal((q4._data + 0)[], 3)
 
 
 fn test_impl_imul() raises:
     l = List(1, 2, 3)
 
-    q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
+    q = Deque(elements=l, capacity=3, min_capacity=2, maxlen=7, shrink=False)
     q *= 0
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 0)
-    # resets capacity to minlen
-    assert_equal(q.capacity, 2)
-    assert_equal(q.minlen, 2)
-    assert_equal(q.maxlen, 7)
-    assert_equal(q.shrink, False)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 0)
+    # resets capacity to min_capacity
+    assert_equal(q._capacity, 2)
+    assert_equal(q._min_capacity, 2)
+    assert_equal(q._maxlen, 7)
+    assert_equal(q._shrink, False)
 
-    q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
+    q = Deque(elements=l, capacity=3, min_capacity=2, maxlen=7, shrink=False)
     q *= 1
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, len(q))
-    assert_equal(q.capacity, 4)
-    assert_equal(q.minlen, 2)
-    assert_equal(q.maxlen, 7)
-    assert_equal(q.shrink, False)
-    assert_equal((q.data + 0)[], 1)
-    assert_equal((q.data + 1)[], 2)
-    assert_equal((q.data + 2)[], 3)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, len(q))
+    assert_equal(q._capacity, 4)
+    assert_equal(q._min_capacity, 2)
+    assert_equal(q._maxlen, 7)
+    assert_equal(q._shrink, False)
+    assert_equal((q._data + 0)[], 1)
+    assert_equal((q._data + 1)[], 2)
+    assert_equal((q._data + 2)[], 3)
 
-    q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
+    q = Deque(elements=l, capacity=3, min_capacity=2, maxlen=7, shrink=False)
     q *= 2
-    assert_equal(q.head, 0)
-    assert_equal(q.tail, 6)
-    assert_equal(q.capacity, 8)
-    assert_equal(q.minlen, 2)
-    assert_equal(q.maxlen, 7)
-    assert_equal(q.shrink, False)
-    assert_equal((q.data + 0)[], 1)
-    assert_equal((q.data + 5)[], 3)
+    assert_equal(q._head, 0)
+    assert_equal(q._tail, 6)
+    assert_equal(q._capacity, 8)
+    assert_equal(q._min_capacity, 2)
+    assert_equal(q._maxlen, 7)
+    assert_equal(q._shrink, False)
+    assert_equal((q._data + 0)[], 1)
+    assert_equal((q._data + 5)[], 3)
 
-    q = Deque(elements=l, capacity=3, minlen=2, maxlen=7, shrink=False)
+    q = Deque(elements=l, capacity=3, min_capacity=2, maxlen=7, shrink=False)
     q *= 3
     # should obey maxlen
-    assert_equal(q.head, 2)
-    assert_equal(q.tail, 1)
-    assert_equal(q.capacity, 8)
-    assert_equal(q.minlen, 2)
-    assert_equal(q.maxlen, 7)
-    assert_equal(q.shrink, False)
-    assert_equal((q.data + 2)[], 3)
-    assert_equal((q.data + 0)[], 3)
+    assert_equal(q._head, 2)
+    assert_equal(q._tail, 1)
+    assert_equal(q._capacity, 8)
+    assert_equal(q._min_capacity, 2)
+    assert_equal(q._maxlen, 7)
+    assert_equal(q._shrink, False)
+    assert_equal((q._data + 2)[], 3)
+    assert_equal((q._data + 0)[], 3)
 
 
 # ===----------------------------------------------------------------------===#
@@ -741,7 +741,7 @@ fn test_insert() raises:
 
     # assert deque buffer reallocated
     assert_equal(len(q), 4)
-    assert_equal(q.capacity, 8)
+    assert_equal(q._capacity, 8)
 
     # # positive index inbound
     q.insert(1, 4)
@@ -771,10 +771,10 @@ fn test_insert() raises:
 
 
 fn test_remove() raises:
-    q = Deque[Int](minlen=32)
+    q = Deque[Int](min_capacity=32)
     q.extend(List(0, 1, 0, 2, 3, 0, 4, 5))
     assert_equal(len(q), 8)
-    assert_equal(q.capacity, 64)
+    assert_equal(q._capacity, 64)
 
     # remove first
     q.remove(0)
@@ -782,7 +782,7 @@ fn test_remove() raises:
     assert_equal(len(q), 7)
     assert_equal(q[0], 1)
     # had to shrink its capacity
-    assert_equal(q.capacity, 32)
+    assert_equal(q._capacity, 32)
 
     # remove last
     q.remove(5)
@@ -790,7 +790,7 @@ fn test_remove() raises:
     assert_equal(len(q), 6)
     assert_equal(q[5], 4)
     # should not shrink further
-    assert_equal(q.capacity, 32)
+    assert_equal(q._capacity, 32)
 
     # remove in the first half
     q.remove(0)
@@ -811,7 +811,7 @@ fn test_remove() raises:
 
 fn test_peek_and_peekleft() raises:
     q = Deque[Int](capacity=4)
-    assert_equal(q.capacity, 4)
+    assert_equal(q._capacity, 4)
 
     with assert_raises():
         _ = q.peek()
@@ -827,12 +827,12 @@ fn test_peek_and_peekleft() raises:
     assert_equal(q.peek(), 3)
 
     q.append(4)
-    assert_equal(q.capacity, 4)
+    assert_equal(q._capacity, 4)
     assert_equal(q.peekleft(), 2)
     assert_equal(q.peek(), 4)
 
     q.append(5)
-    assert_equal(q.capacity, 8)
+    assert_equal(q._capacity, 8)
     assert_equal(q.peekleft(), 2)
     assert_equal(q.peek(), 5)
 
