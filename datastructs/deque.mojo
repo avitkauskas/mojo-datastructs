@@ -172,7 +172,7 @@ struct Deque[ElementType: CollectionElement](
             shrink=other._shrink,
         )
         for i in range(len(other)):
-            offset = (other._head + i) & (other._capacity - 1)
+            offset = other._physical_index(other._head + i)
             (self._data + i).init_pointee_copy((other._data + offset)[])
 
         self._tail = len(other)
@@ -283,7 +283,7 @@ struct Deque[ElementType: CollectionElement](
             return False
         for i in range(len(self)):
             offset_self = self._physical_index(self._head + i)
-            offset_other = (other._head + i) & (other._capacity - 1)
+            offset_other = other._physical_index(other._head + i)
             if (self._data + offset_self)[] != (other._data + offset_other)[]:
                 return False
         return True
