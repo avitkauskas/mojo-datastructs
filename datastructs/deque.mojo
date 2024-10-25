@@ -16,9 +16,8 @@ from collections import Deque
 
 from bit import bit_ceil, is_power_of_two
 from collections import Optional
+from documentation import doc_private
 from memory import UnsafePointer
-
-from builtin._documentation import doc_private
 
 
 # ===----------------------------------------------------------------------===#
@@ -401,7 +400,7 @@ struct Deque[ElementType: CollectionElement](
     @no_inline
     fn write_to[
         RepresentableElementType: RepresentableCollectionElement,
-        WriterType: Writer, //
+        WriterType: Writer, //,
     ](self: Deque[RepresentableElementType], inout writer: WriterType):
         """Writes `my_deque.__str__()` to a `Writer`.
 
@@ -616,7 +615,7 @@ struct Deque[ElementType: CollectionElement](
             (values.data + i).destroy_pointee()
 
         # move remaining elements from `values`
-        src = values.data.bitcast[origin=__origin_of(values)]() + n_pop_values
+        src = values.data.bitcast[origin = __origin_of(values)]() + n_pop_values
         for i in range(n_move_values):
             (src + i).move_pointee_into(self._data + self._tail)
             self._tail = self._physical_index(self._tail + 1)
@@ -868,14 +867,18 @@ struct Deque[ElementType: CollectionElement](
         """
         if n < 0:
             for _ in range(-n):
-                (self._data + self._head).move_pointee_into(self._data + self._tail)
+                (self._data + self._head).move_pointee_into(
+                    self._data + self._tail
+                )
                 self._tail = self._physical_index(self._tail + 1)
                 self._head = self._physical_index(self._head + 1)
         else:
             for _ in range(n):
                 self._tail = self._physical_index(self._tail - 1)
                 self._head = self._physical_index(self._head - 1)
-                (self._data + self._tail).move_pointee_into(self._data + self._head)
+                (self._data + self._tail).move_pointee_into(
+                    self._data + self._head
+                )
 
     @doc_private
     @always_inline
