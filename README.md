@@ -49,20 +49,20 @@ In addition to the Python API, Deque provides two convenience methods:
 
 ### Constructor Options for Optimization
 
-Beyond Python’s `maxlen` argument, this Deque offers additional constructor options: `capacity`, `minlen`, and `shrink`.
+Beyond Python’s `maxlen` argument, this Deque offers additional constructor options: `capacity`, `min_capacity`, and `shrink`.
 These allow you to fine-tune the deque’s behavior for speed or memory usage based on your application’s needs.
 
 By default, the deque allocates memory for 64 elements and adjusts its size automatically as needed.
 However, if you want to optimize performance and reduce buffer reallocations, these additional options can be helpful:
 
 - `capacity`: sets the initial size of the deque when created.
-- `minlen`: ensures the buffer will retain memory for at least this many elements,\
+- `min_capacity`: ensures the buffer will retain memory for at least this many elements,\
 even if the deque's actual size drops below that number.
 - `shrink`: disables shrinking entirely when set to `shrink=False`.\
 This ensures that the buffer only grows as needed but never shrinks, optimizing for performance at the cost of memory usage.
 
 For example, if you expect your deque to quickly grow to 10'000 elements but rarely drop below 5'000,
-you can initialize it with `Deque(capacity=10000, minlen=5000)`. This will reduce expensive buffer reallocations and improve performance.
+you can initialize it with `Deque(capacity=10000, min_capacity=5000)`. This will reduce expensive buffer reallocations and improve performance.
 Alternatively, if speed is the priority and memory usage is less of a concern, you can use `Deque(capacity=10000, shrink=False)`,
 which allocates memory for 10'000 elements upfront and prevents shrinking altogether, anticipating future growth.
 
