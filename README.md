@@ -1,17 +1,17 @@
 # Some missing data structures for Mojo
 
-> Last tested on the Mojo nightly build: `mojo 2024.10.2605 (c5b92845)`
+> Last tested on the Mojo nightly build: `mojo 2024.10.2805 (25f45fc8)`
 
 ### Instructions
 
-To use the package, just copy the `datastructs.📦` from the `package` directory to your packages location or copy the `datastructs` directory and use it as a module. Then in your source code import what you need:
-```mojo
-from datastructs import Deque
+To use the package, copy the `datastructs` directory to your project root directory or make a package from the source of this repo:
+```
+mojo package datastructs
 ```
 
-To make a package from source:
-```
-mojo package datastructs -o package/datastructs.📦
+Then in your source code import what you need:
+```mojo
+from datastructs import Deque
 ```
 
 To run all the tests:
