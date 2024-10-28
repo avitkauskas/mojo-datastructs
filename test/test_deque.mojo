@@ -343,9 +343,9 @@ fn test_impl_extendleft() raises:
 
     q.extendleft(lst)
     # head wrapped to the end of the buffer
+    assert_equal(q._capacity, 8)
     assert_equal(q._head, 5)
     assert_equal(q._tail, 0)
-    assert_equal(q._capacity, 8)
     assert_equal((q._data + 5)[], 2)
     assert_equal((q._data + 6)[], 1)
     assert_equal((q._data + 7)[], 0)
@@ -359,6 +359,45 @@ fn test_impl_extendleft() raises:
     assert_equal((q._data + 3)[], 1)
     assert_equal((q._data + 4)[], 0)
     assert_equal((q._data + 5)[], 2)
+
+    # turn off `maxlen` restriction
+    q._maxlen = -1
+    q.extendleft(lst)
+    assert_equal(q._capacity, 8)
+    assert_equal(q._head, 7)
+    assert_equal(q._tail, 6)
+    assert_equal((q._data + 7)[], 2)
+    assert_equal((q._data + 0)[], 1)
+    assert_equal((q._data + 1)[], 0)
+    assert_equal((q._data + 2)[], 2)
+    assert_equal((q._data + 3)[], 1)
+    assert_equal((q._data + 4)[], 0)
+    assert_equal((q._data + 5)[], 2)
+
+    # turn on `maxlen` and force to re-allocate
+    q._maxlen = 8
+    q.extendleft(lst)
+    assert_equal(q._capacity, 16)
+    assert_equal(q._head, 13)
+    assert_equal(q._tail, 5)
+    # has to popleft the last 2 elements
+    assert_equal((q._data + 13)[], 2)
+    assert_equal((q._data + 14)[], 1)
+    assert_equal((q._data + 3)[], 2)
+    assert_equal((q._data + 4)[], 1)
+
+    # extend with the list that is longer than `maxlen`
+    # has to pop all deque elements and some initial
+    # elements from the list as well
+    lst = List(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+    q.extendleft(lst)
+    assert_equal(q._capacity, 16)
+    assert_equal(q._head, 5)
+    assert_equal(q._tail, 13)
+    assert_equal((q._data + 5)[], 9)
+    assert_equal((q._data + 6)[], 8)
+    assert_equal((q._data + 11)[], 3)
+    assert_equal((q._data + 12)[], 2)
 
 
 fn test_impl_insert() raises:

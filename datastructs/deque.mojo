@@ -563,7 +563,6 @@ struct Deque[ElementType: CollectionElement](
         len_total = len_self + len_values
 
         # number of elements to move into the final deque
-        # first from `values` and then from `self`
         n_move_total = len_total
         if self._maxlen > 0:
             n_move_total = min(len_total, self._maxlen)
@@ -613,13 +612,60 @@ struct Deque[ElementType: CollectionElement](
     fn extendleft(inout self, owned values: List[ElementType]):
         """Extends the left side of the deque by consuming elements from the list argument.
 
-        The series of left appends results in reversing the order of elements in the list argument.
+        Acts as series of left appends resulting in reversed order of elements in the list argument.
 
         Args:
             values: List whose elements will be added at the left side of the deque.
         """
-        for value in values:
-            self.appendleft(value[])
+        len_self = len(self)
+        len_values = len(values)
+        len_total = len_self + len_values
+
+        # number of elements to move into the final deque
+        n_move_total = len_total
+        if self._maxlen > 0:
+            n_move_total = min(len_total, self._maxlen)
+        n_move_values = min(len_values, n_move_total)
+        n_move_self = n_move_total - n_move_values
+
+        # number of elements that do not fit into `maxlen`
+        # and therefore have to be popped and destroyed
+        n_pop_self = len_self - n_move_self
+        n_pop_values = len_values - n_move_values
+
+        # pop excess `self` elements
+        for _ in range(n_pop_self):
+            self._tail = self._physical_index(self._tail - 1)
+            (self._data + self._tail).destroy_pointee()
+
+        # move from `self` to new location if we have to re-allocate
+        if n_move_total >= self._capacity:
+            new_capacity = bit_ceil(n_move_total)
+            if new_capacity == n_move_total:
+                new_capacity <<= 1
+            new_data = UnsafePointer[ElementType].alloc(new_capacity)
+            for i in range(n_move_self):
+                offset = self._physical_index(self._head + i)
+                (self._data + offset).move_pointee_into(new_data + i)
+            if self._data:
+                self._data.free()
+            self._data = new_data
+            self._capacity = new_capacity
+            self._head = 0
+            self._tail = n_move_self
+
+        # we will consume all elements of `values`
+        values_data = values.steal_data()
+
+        # pop excess elements from `values`
+        for i in range(n_pop_values):
+            (values_data + i).destroy_pointee()
+
+        # move remaining elements from `values`
+        src = values_data + n_pop_values
+        for i in range(n_move_values):
+            self._head = self._physical_index(self._head - 1)
+            (src + i).move_pointee_into(self._data + self._head)
 
     fn index[
         EqualityElementType: EqualityComparableCollectionElement, //
