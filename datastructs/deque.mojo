@@ -16,7 +16,6 @@ from collections import Deque
 
 from bit import bit_ceil
 from collections import Optional
-from documentation import doc_private
 from memory import UnsafePointer
 
 
@@ -283,6 +282,7 @@ struct Deque[ElementType: CollectionElement](
         """
         if len(self) != len(other):
             return False
+
         for i in range(len(self)):
             offset_self = self._physical_index(self._head + i)
             offset_other = other._physical_index(other._head + i)
@@ -867,7 +867,6 @@ struct Deque[ElementType: CollectionElement](
                     self._data + self._head
                 )
 
-    @doc_private
     fn _compute_pop_and_move_counts(
         self, len_self: Int, len_values: Int
     ) -> (Int, Int, Int, Int, Int):
@@ -907,7 +906,6 @@ struct Deque[ElementType: CollectionElement](
             n_pop_values,
         )
 
-    @doc_private
     @always_inline
     fn _physical_index(self, logical_index: Int) -> Int:
         """Calculates the physical index in the circular buffer.
@@ -921,7 +919,6 @@ struct Deque[ElementType: CollectionElement](
         """
         return logical_index & (self._capacity - 1)
 
-    @doc_private
     fn _prepare_for_new_elements(inout self, n_total: Int, n_retain: Int):
         """Prepares the deque’s internal buffer for adding new elements by
         reallocating memory and retaining the specified number of existing elements.
@@ -948,7 +945,6 @@ struct Deque[ElementType: CollectionElement](
         self._head = 0
         self._tail = n_retain
 
-    @doc_private
     fn _realloc(inout self, new_capacity: Int):
         """Relocates data to a new storage buffer.
 
@@ -985,7 +981,6 @@ struct Deque[ElementType: CollectionElement](
         self._capacity = new_capacity
 
 
-@doc_private
 @value
 struct _DequeIter[
     deque_mutability: Bool, //,
