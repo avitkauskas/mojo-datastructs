@@ -78,7 +78,7 @@ struct Deque[ElementType: CollectionElement](
     # ===-------------------------------------------------------------------===#
 
     fn __init__(
-        inout self,
+        out self,
         *,
         owned elements: Optional[List[ElementType]] = None,
         capacity: Int = self.default_capacity,
@@ -125,7 +125,7 @@ struct Deque[ElementType: CollectionElement](
         if elements is not None:
             self.extend(elements.value())
 
-    fn __init__(inout self, owned *values: ElementType):
+    fn __init__(out self, owned *values: ElementType):
         """Constructs a deque from the given values.
 
         Args:
@@ -134,7 +134,7 @@ struct Deque[ElementType: CollectionElement](
         self = Self(variadic_list=values^)
 
     fn __init__(
-        inout self, *, owned variadic_list: VariadicListMem[ElementType, _]
+        out self, *, owned variadic_list: VariadicListMem[ElementType, _]
     ):
         """Constructs a deque from the given values.
 
@@ -160,7 +160,7 @@ struct Deque[ElementType: CollectionElement](
 
         self._tail = args_length
 
-    fn __init__(inout self, other: Self):
+    fn __init__(out self, other: Self):
         """Creates a deepcopy of the given deque.
 
         Args:

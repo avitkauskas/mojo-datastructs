@@ -11,7 +11,6 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/aiosignal-1.3.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/annotated-types-0.7.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/anyio-4.6.2.post1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/asgiref-3.8.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/attrs-24.2.0-pyh71513ae_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/aws-c-auth-0.7.31-h14f56dd_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/aws-c-cal-0.7.4-hd45b2be_2.conda
@@ -34,7 +33,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/backoff-2.2.1-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/brotli-python-1.1.0-py312hde4cb15_2.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/bzip2-1.0.8-h99b78c6_7.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/c-ares-1.34.2-h7ab814d_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/c-ares-1.34.3-h5505292_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ca-certificates-2024.8.30-hf0a4a13_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/certifi-2024.8.30-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/cffi-1.17.1-py312h0fad829_0.conda
@@ -113,29 +112,25 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/lz4-c-1.9.4-hb7217d7_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/markdown-it-py-3.0.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/markupsafe-3.0.2-py312ha0ccf2a_0.conda
-      - conda: https://conda.modular.com/max-nightly/noarch/max-24.6.0.dev2024110905-release.conda
-      - conda: https://conda.modular.com/max-nightly/osx-arm64/max-core-24.6.0.dev2024110905-release.conda
-      - conda: https://conda.modular.com/max-nightly/osx-arm64/max-python-24.6.0.dev2024110905-3.12release.conda
-      - conda: https://conda.modular.com/max-nightly/noarch/mblack-24.6.0.dev2024110905-release.conda
+      - conda: https://conda.modular.com/max-nightly/noarch/max-24.6.0.dev2024111205-release.conda
+      - conda: https://conda.modular.com/max-nightly/osx-arm64/max-core-24.6.0.dev2024111205-release.conda
+      - conda: https://conda.modular.com/max-nightly/osx-arm64/max-python-24.6.0.dev2024111205-3.12release.conda
+      - conda: https://conda.modular.com/max-nightly/noarch/mblack-24.6.0.dev2024111205-release.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/mdurl-0.1.2-pyhd8ed1ab_0.conda
-      - conda: https://conda.modular.com/max-nightly/noarch/mojo-jupyter-24.6.0.dev2024110905-release.conda
+      - conda: https://conda.modular.com/max-nightly/noarch/mojo-jupyter-24.6.0.dev2024111205-release.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/multidict-6.1.0-py312hdb8e49c_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/multiprocess-0.70.15-py312h02f2b3b_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/mypy_extensions-1.0.0-pyha770c72_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ncurses-6.5-h7bae524_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/numpy-1.26.4-py312h8442bc7_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/openssl-3.3.2-h8359307_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/openssl-3.4.0-h39f12f2_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-api-1.27.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-exporter-otlp-proto-common-1.27.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-exporter-otlp-proto-http-1.27.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-exporter-prometheus-1.12.0rc1-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-instrumentation-0.48b0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-instrumentation-asgi-0.48b0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-instrumentation-fastapi-0.48b0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-proto-1.27.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-sdk-1.27.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-semantic-conventions-0.48b0-pyhd8ed1ab_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-util-http-0.48b0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/orc-2.0.2-h75dedd0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/packaging-24.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pandas-2.2.3-py312hcd31e36_1.conda
@@ -201,7 +196,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/yaml-0.2.5-h3422bc3_2.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/yarl-1.16.0-py312h0bf5046_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zeromq-4.3.5-h9f5b81c_6.conda
-      - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.20.2-pyhd8ed1ab_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/zipp-3.21.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstandard-0.23.0-py312h15fbf35_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.6-hb46c0d2_0.conda
 packages:
@@ -297,22 +292,6 @@ packages:
   license_family: MIT
   size: 109864
   timestamp: 1728935803440
-- kind: conda
-  name: asgiref
-  version: 3.8.1
-  build: pyhd8ed1ab_0
-  subdir: noarch
-  noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/asgiref-3.8.1-pyhd8ed1ab_0.conda
-  sha256: 85fc8f54361b922d744c8728a7a711cab390b78941e18a3570dabfac8169e5f9
-  md5: b5c2e1034ccc76fb14031637924880eb
-  depends:
-  - python >=3.8
-  - typing_extensions >=4
-  license: BSD-3-Clause
-  license_family: BSD
-  size: 26347
-  timestamp: 1711269034814
 - kind: conda
   name: attrs
   version: 24.2.0
@@ -711,18 +690,18 @@ packages:
   timestamp: 1720974522888
 - kind: conda
   name: c-ares
-  version: 1.34.2
-  build: h7ab814d_0
+  version: 1.34.3
+  build: h5505292_0
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/c-ares-1.34.2-h7ab814d_0.conda
-  sha256: 24d53d27397f9c2f0c168992690b5ec1bd62593fb4fc1f1e906ab91b10fd06c3
-  md5: 8a8cfc11064b521bc54bd2d8591cb137
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/c-ares-1.34.3-h5505292_0.conda
+  sha256: e9e0f737286f9f4173c76fb01a11ffbe87cfc2da4e99760e1e18f47851d7ae06
+  md5: d0155a4f41f28628c7409ea000eeb19c
   depends:
   - __osx >=11.0
   license: MIT
   license_family: MIT
-  size: 177487
-  timestamp: 1729006763496
+  size: 178951
+  timestamp: 1731182071026
 - kind: conda
   name: ca-certificates
   version: 2024.8.30
@@ -2087,53 +2066,51 @@ packages:
   timestamp: 1729351534830
 - kind: conda
   name: max
-  version: 24.6.0.dev2024110905
+  version: 24.6.0.dev2024111205
   build: release
   subdir: noarch
   noarch: python
-  url: https://conda.modular.com/max-nightly/noarch/max-24.6.0.dev2024110905-release.conda
-  sha256: 8d45c83979a261ca3d05272d7fa7ef42bcc7c244e7a7c29a9445bea8f94247ed
-  md5: 7baaab5ba048197961f4d8f37ee5f225
+  url: https://conda.modular.com/max-nightly/noarch/max-24.6.0.dev2024111205-release.conda
+  sha256: 0bd0d035403f499b0cd50499f71faf0dc7f844f85575d84e8b3aa432f8f77470
+  md5: dd143ab5431275f37c8169297500a064
   depends:
-  - max-core ==24.6.0.dev2024110905 release
-  - max-python >=24.6.0.dev2024110905,<25.0a0
-  - mojo-jupyter ==24.6.0.dev2024110905 release
-  - mblack ==24.6.0.dev2024110905 release
+  - max-core ==24.6.0.dev2024111205 release
+  - max-python >=24.6.0.dev2024111205,<25.0a0
+  - mojo-jupyter ==24.6.0.dev2024111205 release
+  - mblack ==24.6.0.dev2024111205 release
   license: LicenseRef-Modular-Proprietary
-  size: 9927
-  timestamp: 1731129658559
+  size: 9925
+  timestamp: 1731389134441
 - kind: conda
   name: max-core
-  version: 24.6.0.dev2024110905
+  version: 24.6.0.dev2024111205
   build: release
   subdir: osx-arm64
-  url: https://conda.modular.com/max-nightly/osx-arm64/max-core-24.6.0.dev2024110905-release.conda
-  sha256: d572926d03ba83929582033e5cdd2fe056c02fe44c656cd2713a1cc8b1f210d3
-  md5: 43107af9a2b0dd5d27c2a047233baa4e
+  url: https://conda.modular.com/max-nightly/osx-arm64/max-core-24.6.0.dev2024111205-release.conda
+  sha256: 8b391fce75c22f623935268f2e9fc1af1fd494a60f1c7062b099c36c032ec469
+  md5: 9054ee2c3d543812a65a105cc8a8caf8
   depends:
-  - mblack ==24.6.0.dev2024110905 release
+  - mblack ==24.6.0.dev2024111205 release
   arch: arm64
   platform: osx
   license: LicenseRef-Modular-Proprietary
-  size: 230156039
-  timestamp: 1731129712297
+  size: 230274144
+  timestamp: 1731388888054
 - kind: conda
   name: max-python
-  version: 24.6.0.dev2024110905
+  version: 24.6.0.dev2024111205
   build: 3.12release
   subdir: osx-arm64
-  url: https://conda.modular.com/max-nightly/osx-arm64/max-python-24.6.0.dev2024110905-3.12release.conda
-  sha256: dcdfb95b0c7d343173cbdbe2582d6ca4319d7c18c5f16f12bad5272a1da3b4e9
-  md5: eee75b5125e0896539a582869ce5334b
+  url: https://conda.modular.com/max-nightly/osx-arm64/max-python-24.6.0.dev2024111205-3.12release.conda
+  sha256: d1802a7039e38fd0895b7505a62955b2ad54ed3d8eb57cc8c79a68024b290bf6
+  md5: b6421f28c4bc5899e903e973cc11f495
   depends:
-  - max-core ==24.6.0.dev2024110905 release
+  - max-core ==24.6.0.dev2024111205 release
   - python 3.12.*
   - fastapi
   - numpy >=1.18,<2.0
-  - opentelemetry-api
   - opentelemetry-exporter-otlp-proto-http >=1.27.0
   - opentelemetry-exporter-prometheus >=0.48b0
-  - opentelemetry-instrumentation-fastapi
   - opentelemetry-sdk >=1.27.0
   - pydantic-settings >=2.4.0,<3
   - pydantic >=2.4.0,<3
@@ -2146,17 +2123,17 @@ packages:
   arch: arm64
   platform: osx
   license: LicenseRef-Modular-Proprietary
-  size: 123000627
-  timestamp: 1731129712301
+  size: 123141088
+  timestamp: 1731388888057
 - kind: conda
   name: mblack
-  version: 24.6.0.dev2024110905
+  version: 24.6.0.dev2024111205
   build: release
   subdir: noarch
   noarch: python
-  url: https://conda.modular.com/max-nightly/noarch/mblack-24.6.0.dev2024110905-release.conda
-  sha256: dd2eb47f8e3f548d86d9d413b2afd02d3285d749f6ea30ef1339ad3cd6aca834
-  md5: 4e3e4f3a17b23f5e8e53ac88e1f01d2c
+  url: https://conda.modular.com/max-nightly/noarch/mblack-24.6.0.dev2024111205-release.conda
+  sha256: af73aef46edeb877ab8dcdda1582cfda522844ee28bbfa13229926633bd1b79c
+  md5: 5c33ebacc8e6100caf36d1c04cc32774
   depends:
   - python >=3.9,<3.13
   - click >=8.0.0
@@ -2166,8 +2143,8 @@ packages:
   - platformdirs >=2
   - python
   license: MIT
-  size: 130419
-  timestamp: 1731129658565
+  size: 130620
+  timestamp: 1731389134447
 - kind: conda
   name: mdurl
   version: 0.1.2
@@ -2185,21 +2162,21 @@ packages:
   timestamp: 1704317789138
 - kind: conda
   name: mojo-jupyter
-  version: 24.6.0.dev2024110905
+  version: 24.6.0.dev2024111205
   build: release
   subdir: noarch
   noarch: python
-  url: https://conda.modular.com/max-nightly/noarch/mojo-jupyter-24.6.0.dev2024110905-release.conda
-  sha256: b5345257e3307876afdb78dd2ca7d080949b72a3c96a5646f5f207b8ab9b29a4
-  md5: 3498c6ad304b44d33a3d69e783034ae9
+  url: https://conda.modular.com/max-nightly/noarch/mojo-jupyter-24.6.0.dev2024111205-release.conda
+  sha256: ddf919e1db43f7862d0782c098bb318998f913b9c10ce35b585e6b973892991a
+  md5: f18312b66b27b2d333705e8740231899
   depends:
-  - max-core ==24.6.0.dev2024110905 release
+  - max-core ==24.6.0.dev2024111205 release
   - python >=3.9,<3.13
   - jupyter_client >=8.6.2,<8.7
   - python
   license: LicenseRef-Modular-Proprietary
-  size: 22951
-  timestamp: 1731129658567
+  size: 22947
+  timestamp: 1731389134447
 - kind: conda
   name: multidict
   version: 6.1.0
@@ -2289,19 +2266,19 @@ packages:
   timestamp: 1707226249608
 - kind: conda
   name: openssl
-  version: 3.3.2
-  build: h8359307_0
+  version: 3.4.0
+  build: h39f12f2_0
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/openssl-3.3.2-h8359307_0.conda
-  sha256: 940fa01c4dc6152158fe8943e05e55a1544cab639df0994e3b35937839e4f4d1
-  md5: 1773ebccdc13ec603356e8ff1db9e958
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/openssl-3.4.0-h39f12f2_0.conda
+  sha256: bd1d58ced46e75efa3b842c61642fd12272c69e9fe4d7261078bc082153a1d53
+  md5: df307bbc703324722df0293c9ca2e418
   depends:
   - __osx >=11.0
   - ca-certificates
   license: Apache-2.0
   license_family: Apache
-  size: 2882450
-  timestamp: 1725410638874
+  size: 2935176
+  timestamp: 1731377561525
 - kind: conda
   name: opentelemetry-api
   version: 1.27.0
@@ -2378,64 +2355,6 @@ packages:
   size: 14721
   timestamp: 1695214221489
 - kind: conda
-  name: opentelemetry-instrumentation
-  version: 0.48b0
-  build: pyhd8ed1ab_0
-  subdir: noarch
-  noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-instrumentation-0.48b0-pyhd8ed1ab_0.conda
-  sha256: e7466998c0a6e5ecc9b8681312617c5d6d85afe3902a03fa7c755eb1a08c3db8
-  md5: 5cd186b5587efdc79c6b24f06b2b1726
-  depends:
-  - opentelemetry-api ~=1.4
-  - python >=3.7
-  - setuptools >=16.0
-  - wrapt <2.0.0,>=1.0.0
-  license: Apache-2.0
-  license_family: APACHE
-  size: 30783
-  timestamp: 1724896532781
-- kind: conda
-  name: opentelemetry-instrumentation-asgi
-  version: 0.48b0
-  build: pyhd8ed1ab_0
-  subdir: noarch
-  noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-instrumentation-asgi-0.48b0-pyhd8ed1ab_0.conda
-  sha256: 563634bfbb54093812aabcc9bb36b1430c462c02350d114967862188d66fddec
-  md5: e337134c68bfa548019f83593164cdfd
-  depends:
-  - asgiref ~=3.0
-  - opentelemetry-api ~=1.12
-  - opentelemetry-instrumentation 0.48b0
-  - opentelemetry-semantic-conventions 0.48b0
-  - opentelemetry-util-http 0.48b0
-  - python >=3.7
-  license: Apache-2.0
-  license_family: APACHE
-  size: 23429
-  timestamp: 1724943803444
-- kind: conda
-  name: opentelemetry-instrumentation-fastapi
-  version: 0.48b0
-  build: pyhd8ed1ab_0
-  subdir: noarch
-  noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-instrumentation-fastapi-0.48b0-pyhd8ed1ab_0.conda
-  sha256: 5c9195c089446241590001cfbcbc12421a2b89a0a23dd3691cd45fe9f77d5c93
-  md5: e844191ea9b60804c57fb0978698407b
-  depends:
-  - opentelemetry-api ~=1.12
-  - opentelemetry-instrumentation 0.48b0
-  - opentelemetry-instrumentation-asgi 0.48b0
-  - opentelemetry-semantic-conventions 0.48b0
-  - opentelemetry-util-http 0.48b0
-  - python >=3.7
-  license: Apache-2.0
-  license_family: APACHE
-  size: 19806
-  timestamp: 1724987641159
-- kind: conda
   name: opentelemetry-proto
   version: 1.27.0
   build: pyhd8ed1ab_0
@@ -2485,21 +2404,6 @@ packages:
   license_family: APACHE
   size: 76393
   timestamp: 1724919708207
-- kind: conda
-  name: opentelemetry-util-http
-  version: 0.48b0
-  build: pyhd8ed1ab_0
-  subdir: noarch
-  noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/opentelemetry-util-http-0.48b0-pyhd8ed1ab_0.conda
-  sha256: 9bc1dbb9d258d6e6c25d96b85d58d049e325971270d42439b5cff88777ce7bc7
-  md5: 4fe36ba8135c7fb262d0f7721aa01b05
-  depends:
-  - python >=3.8
-  license: Apache-2.0
-  license_family: APACHE
-  size: 19163
-  timestamp: 1724929864899
 - kind: conda
   name: orc
   version: 2.0.2
@@ -3635,19 +3539,19 @@ packages:
   timestamp: 1728363954972
 - kind: conda
   name: zipp
-  version: 3.20.2
+  version: 3.21.0
   build: pyhd8ed1ab_0
   subdir: noarch
   noarch: python
-  url: https://conda.anaconda.org/conda-forge/noarch/zipp-3.20.2-pyhd8ed1ab_0.conda
-  sha256: 1e84fcfa41e0afdd87ff41e6fbb719c96a0e098c1f79be342293ab0bd8dea322
-  md5: 4daaed111c05672ae669f7036ee5bba3
+  url: https://conda.anaconda.org/conda-forge/noarch/zipp-3.21.0-pyhd8ed1ab_0.conda
+  sha256: 232a30e4b0045c9de5e168dda0328dc0e28df9439cdecdfb97dd79c1c82c4cec
+  md5: fee389bf8a4843bd7a2248ce11b7f188
   depends:
   - python >=3.8
   license: MIT
   license_family: MIT
-  size: 21409
-  timestamp: 1726248679175
+  size: 21702
+  timestamp: 1731262194278
 - kind: conda
   name: zstandard
   version: 0.23.0
