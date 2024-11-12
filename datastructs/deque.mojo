@@ -178,7 +178,7 @@ struct Deque[ElementType: CollectionElement](
 
         self._tail = len(other)
 
-    fn __moveinit__(inout self, owned existing: Self):
+    fn __moveinit__(out self, owned existing: Self):
         """Moves data of an existing deque into a new one.
 
         Args:
