@@ -1,22 +1,11 @@
 # Some missing data structures for Mojo
 
-> Last tested on the Mojo nightly build: `mojo 2024.11.1606 (826a7a66)`
-
-### Instructions
-
-To use the package, copy the `datastructs` directory to your project root directory or make a package from the source of this repo:
-```
-mojo package datastructs
-```
-
-Then in your source code import what you need:
+> As of the Mojo nightly build `mojo 2024.11.1705 (43b6e3df)`, this implementation of `Deque`
+is included in the Mojo standard library and is further maintained there by the Modular team and contributors.
+This repository will not be updated with the latest changes from the official Mojo repository.
+Please use `Deque` from the Mojo standard library:
 ```mojo
-from datastructs import Deque
-```
-
-To run all the tests:
-```
-mojo test -I . test
+from collections import Deque
 ```
 
 ## Deque (Double-Ended Queue)
