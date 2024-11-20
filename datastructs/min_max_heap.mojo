@@ -1,9 +1,8 @@
 # ===----------------------------------------------------------------------=== #
-# Copyright (c) 2024, Your Name. All rights reserved.
-#
-# Licensed under the Apache License v2.0 with LLVM Exceptions:
-# https://llvm.org/LICENSE.txt
+# Copyright (c) 2024 Alvydas Vitkauskas
+# Licensed under the MIT License.
 # ===----------------------------------------------------------------------=== #
+
 """Defines the MinMaxHeap type.
 
 A min-max heap is a complete binary tree data structure which combines the
