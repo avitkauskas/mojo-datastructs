@@ -13,7 +13,7 @@ levels are greater than or equal to their descendants.
 
 Examples:
 ```mojo
-from collections import MinMaxHeap
+from datastructs import MinMaxHeap
 
 heap = MinMaxHeap[Int]()
 heap.push(4)
@@ -409,7 +409,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
             index: The index of the element to trickle down.
         """
         while True:
-            # Find largest among children and grandchildren
+            # Find smallest among children and grandchildren
             smallest = index
 
             # Check children
@@ -447,30 +447,6 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
                     self._swap(smallest, parent)
 
             index = smallest
-
-        # while index * 2 + 1 < self._size:  # While has children
-        #     min_idx = index
-
-        #     # Check children and grandchildren
-        #     start = index * 2 + 1
-        #     end = min(self._size, start + 4)  # Up to 4 descendants
-
-        #     for i in range(start, end):
-        #         if (self._data + i)[] < (self._data + min_idx)[]:
-        #             min_idx = i
-
-        #     if min_idx == index:
-        #         break
-
-        #     self._swap(index, min_idx)
-
-        #     if min_idx - start >= 2:  # If grandchild was smallest
-        #         parent = (min_idx - 1) // 2
-        #         if (self._data + min_idx)[] > (self._data + parent)[]:
-        #             self._swap(min_idx, parent)
-        #         index = min_idx
-        #     else:
-        #         break
 
     fn _trickle_down_max(inout self, owned index: Int):
         """Moves an element down on a max level until heap properties are satisfied.
