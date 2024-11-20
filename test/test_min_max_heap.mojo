@@ -7,14 +7,19 @@ from datastructs import MinMaxHeap
 # ===----------------------------------------------------------------------===#
 
 
-fn test_impl_init_default() raises:
+# ===----------------------------------------------------------------------===#
+# API Interface tests
+# ===----------------------------------------------------------------------===#
+
+
+fn test_init_default() raises:
     heap = MinMaxHeap[Int]()
 
     assert_equal(heap._capacity, heap.default_capacity)
     assert_equal(heap._size, 0)
 
 
-fn test_impl_init_capacity() raises:
+fn test_init_capacity() raises:
     heap = MinMaxHeap[Int](capacity=-10)
     assert_equal(heap._capacity, heap.default_capacity)
 
@@ -25,7 +30,7 @@ fn test_impl_init_capacity() raises:
     assert_equal(heap._capacity, 10)
 
 
-fn test_impl_init_variadic() raises:
+fn test_init_variadic() raises:
     heap = MinMaxHeap(1, 3, 2, 4)
 
     assert_equal(heap._size, 4)
@@ -35,7 +40,17 @@ fn test_impl_init_variadic() raises:
     assert_equal(heap.get_max(), 4)
 
 
-fn test_impl_len() raises:
+fn test_init_elements() raises:
+    heap = MinMaxHeap(elements=List(1, 3, 2, 4))
+
+    assert_equal(heap._size, 4)
+    assert_equal(heap._capacity, heap.default_capacity)
+    # Check min-max heap property
+    assert_equal(heap.get_min(), 1)
+    assert_equal(heap.get_max(), 4)
+
+
+fn test_len() raises:
     heap = MinMaxHeap[Int]()
     assert_equal(len(heap), 0)
 
@@ -46,7 +61,7 @@ fn test_impl_len() raises:
     assert_equal(len(heap), 2)
 
 
-fn test_impl_bool() raises:
+fn test_bool() raises:
     heap = MinMaxHeap[Int]()
     assert_false(heap)
 
@@ -54,7 +69,7 @@ fn test_impl_bool() raises:
     assert_true(heap)
 
 
-fn test_impl_push() raises:
+fn test_push() raises:
     heap = MinMaxHeap[Int]()
 
     heap.push(3)
@@ -78,7 +93,7 @@ fn test_impl_push() raises:
     assert_equal(heap.get_max(), 4)
 
 
-fn test_impl_pop_min() raises:
+fn test_pop_min() raises:
     heap = MinMaxHeap[Int]()
 
     with assert_raises():
@@ -100,7 +115,7 @@ fn test_impl_pop_min() raises:
     assert_equal(heap.get_max(), 4)
 
 
-fn test_impl_pop_max() raises:
+fn test_pop_max() raises:
     heap = MinMaxHeap[Int]()
 
     with assert_raises():
@@ -122,7 +137,7 @@ fn test_impl_pop_max() raises:
     assert_equal(heap.get_max(), 2)
 
 
-fn test_impl_get_min() raises:
+fn test_get_min() raises:
     heap = MinMaxHeap[Int]()
 
     with assert_raises():
@@ -138,7 +153,7 @@ fn test_impl_get_min() raises:
     assert_equal(heap.get_min(), 1)
 
 
-fn test_impl_get_max() raises:
+fn test_get_max() raises:
     heap = MinMaxHeap[Int]()
 
     with assert_raises():
@@ -154,21 +169,13 @@ fn test_impl_get_max() raises:
     assert_equal(heap.get_max(), 4)
 
 
-fn test_impl_clear() raises:
-    heap = MinMaxHeap[Int]()
-    heap.push(1)
-    heap.push(2)
-    heap.push(3)
-
+fn test_clear() raises:
+    heap = MinMaxHeap[Int](1, 2, 3)
     assert_equal(heap._size, 3)
+
     heap.clear()
     assert_equal(heap._size, 0)
     assert_false(heap)
-
-
-# ===----------------------------------------------------------------------===#
-# API Interface tests
-# ===----------------------------------------------------------------------===#
 
 
 fn test_copy() raises:
@@ -195,7 +202,6 @@ fn test_move() raises:
 
 
 fn test_heap_property() raises:
-    """Tests that the min-max heap property is maintained after operations."""
     heap = MinMaxHeap[Int]()
 
     heap.push(5)
@@ -205,8 +211,8 @@ fn test_heap_property() raises:
     heap.push(9)
     heap.push(4)
 
-    assert_equal(heap.get_min(), 1)  # Root is smallest
-    assert_equal(heap.get_max(), 9)  # Level 1 has largest
+    assert_equal(heap.get_min(), 1)
+    assert_equal(heap.get_max(), 9)
 
 
 fn test_comprehensive() raises:
@@ -274,3 +280,42 @@ fn test_edge_cases() raises:
     for i in range(initial_capacity + 1):
         heap.push(i)
     assert_true(heap._capacity > initial_capacity)
+
+
+fn test_larger_heap() raises:
+    lst = List(5, 1, 7, 2, 9, 0, 2, 3, 4, 8, 7, 1, 3, 0, 9, 6, 8, 6, 5, 4)
+
+    heap = MinMaxHeap(elements=lst)
+    result = List[Int]()
+    while heap:
+        result.append(heap.pop_min())
+    assert_equal(
+        result, List(0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9)
+    )
+
+    heap = MinMaxHeap(elements=lst)
+    result = List[Int]()
+    while heap:
+        result.append(heap.pop_max())
+    assert_equal(
+        result, List(9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0)
+    )
+
+    heap = MinMaxHeap(elements=lst)
+    result = List[Int]()
+    while heap:
+        result.append(heap.pop_min())
+        result.append(heap.pop_max())
+    assert_equal(
+        result, List(0, 9, 0, 9, 1, 8, 1, 8, 2, 7, 2, 7, 3, 6, 3, 6, 4, 5, 4, 5)
+    )
+
+    assert_equal(heap._capacity, 20)
+    heap = MinMaxHeap[Int]()
+    assert_equal(heap._capacity, 16)
+    for e in lst:
+        heap.push(e[])
+    assert_equal(heap._capacity, 32)
+    assert_equal(heap.get_min(), 0)
+    assert_equal(heap.get_max(), 9)
+

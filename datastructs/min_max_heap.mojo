@@ -23,8 +23,9 @@ max_val = heap.get_max()  # Returns 4
 ```
 """
 
-from memory import UnsafePointer
+from bit import bit_width
 from collections import Optional
+from memory import UnsafePointer
 
 
 struct MinMaxHeap[ElementType: ComparableCollectionElement](
@@ -34,11 +35,11 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
 
     Parameters:
         ElementType: The type of elements in the heap.
-            Must implement the trait CollectionElement.
+            Must implement the trait CompareCollectionElement.
     """
 
     # ===-------------------------------------------------------------------===#
-    # Aliases and Constants
+    # Aliases
     # ===-------------------------------------------------------------------===#
 
     alias default_capacity: Int = 16
@@ -61,10 +62,16 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
     # Life cycle methods
     # ===-------------------------------------------------------------------===#
 
-    fn __init__(out self, capacity: Int = Self.default_capacity):
+    fn __init__(
+        out self,
+        *,
+        owned elements: Optional[List[ElementType]] = None,
+        capacity: Int = Self.default_capacity,
+    ):
         """Constructs an empty min-max heap.
 
         Args:
+            elements: The optional list of initial heap elements.
             capacity: Initial capacity of the heap.
         """
         if capacity <= 0:
@@ -72,8 +79,18 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
         else:
             self._capacity = capacity
 
+        if elements is not None and self._capacity < len(elements.value()):
+            self._capacity = len(elements.value())
+
         self._data = UnsafePointer[ElementType].alloc(self._capacity)
         self._size = 0
+
+        if elements is not None:
+            values = elements.value()
+            for i in range(len(values)):
+                (self._data + i).init_pointee_move(values[i])
+            self._size = len(values)
+            self._heapify()
 
     fn __init__(out self, owned *values: ElementType):
         """Constructs a heap from the given values.
@@ -214,19 +231,21 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
             raise "IndexError: Heap is empty"
 
         if self._size == 1:
-            self._size -= 1
+            self._size = 0
             return (self._data).take_pointee()
 
-        # Find maximum among level 1 nodes
-        max_idx = 1
-        if self._size > 2 and (self._data + 2)[] > (self._data + 1)[]:
-            max_idx = 2
+        if self._size == 2:
+            self._size = 1
+            return (self._data + 1).take_pointee()
 
+        max_idx = 1 + ((self._data + 2)[] > (self._data + 1)[])
         result = (self._data + max_idx).take_pointee()
 
         # Move last element to max position and restore heap property
         if self._size > max_idx + 1:
-            (self._data + self._size - 1).move_pointee_into(self._data + max_idx)
+            (self._data + self._size - 1).move_pointee_into(
+                self._data + max_idx
+            )
             self._trickle_down_max(max_idx)
 
         self._size -= 1
@@ -260,17 +279,12 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
 
         if self._size == 1:
             return (self._data)[]
-        
+
         if self._size == 2:
             return (self._data + 1)[]
 
-        # Find maximum among level 1 nodes (children of root)
-        max_val = (self._data + 1)[]
-        if self._size > 2:
-            right_child = (self._data + 2)[]
-            if right_child > max_val:
-                max_val = right_child
-        return max_val
+        max_idx = 1 + ((self._data + 2)[] > (self._data + 1)[])
+        return (self._data + max_idx)[]
 
     fn clear(inout self):
         """Removes all elements from the heap."""
@@ -306,6 +320,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
             else:
                 self._trickle_down_max(i)
 
+    @always_inline
     fn _is_min_level(self, index: Int) -> Bool:
         """Determines if the given index is on a min level (0-based).
 
@@ -315,13 +330,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
         Returns:
             True if the index is on a min level, False otherwise.
         """
-        # Count number of edges from root to node (i.e., level in tree)
-        level = 0
-        i = index + 1  # Convert to 1-based indexing for level calculation
-        while i > 1:
-            i //= 2
-            level += 1
-        return level % 2 == 0
+        return (bit_width(index + 1) & 1) == 1
 
     fn _bubble_up(inout self, index: Int):
         """Moves an element up the heap until heap properties are satisfied.
@@ -340,9 +349,12 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
                 self._swap(index, parent_idx)
                 self._bubble_up_max(parent_idx)
             else:
-                # Compare with grandparent if at min level
                 grandparent_idx = (parent_idx - 1) // 2
-                if index >= 3 and (self._data + index)[] < (self._data + grandparent_idx)[]:
+                if (
+                    index >= 3
+                    and (self._data + index)[]
+                    < (self._data + grandparent_idx)[]
+                ):
                     self._swap(index, grandparent_idx)
                     self._bubble_up_min(grandparent_idx)
         else:
@@ -351,9 +363,12 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
                 self._swap(index, parent_idx)
                 self._bubble_up_min(parent_idx)
             else:
-                # Compare with grandparent if at max level
                 grandparent_idx = (parent_idx - 1) // 2
-                if index >= 3 and (self._data + index)[] > (self._data + grandparent_idx)[]:
+                if (
+                    index >= 3
+                    and (self._data + index)[]
+                    > (self._data + grandparent_idx)[]
+                ):
                     self._swap(index, grandparent_idx)
                     self._bubble_up_max(grandparent_idx)
 
@@ -393,29 +408,69 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
         Args:
             index: The index of the element to trickle down.
         """
-        while index * 2 + 1 < self._size:  # While has children
-            min_idx = index
+        while True:
+            # Find largest among children and grandchildren
+            smallest = index
 
-            # Check children and grandchildren
-            start = index * 2 + 1
-            end = min(self._size, start + 4)  # Up to 4 descendants
+            # Check children
+            left = 2 * index + 1
+            right = 2 * index + 2
+            if (
+                left < self._size
+                and (self._data + left)[] < (self._data + smallest)[]
+            ):
+                smallest = left
+            if (
+                right < self._size
+                and (self._data + right)[] < (self._data + smallest)[]
+            ):
+                smallest = right
 
-            for i in range(start, end):
-                if (self._data + i)[] < (self._data + min_idx)[]:
-                    min_idx = i
+            # Check grandchildren
+            for i in range(4):
+                grandchild = 4 * index + i + 3
+                if (
+                    grandchild < self._size
+                    and (self._data + grandchild)[] < (self._data + smallest)[]
+                ):
+                    smallest = grandchild
 
-            if min_idx == index:
+            if smallest == index:
                 break
 
-            self._swap(index, min_idx)
+            self._swap(index, smallest)
 
-            if min_idx - start >= 2:  # If grandchild was smallest
-                parent = (min_idx - 1) // 2
-                if (self._data + min_idx)[] > (self._data + parent)[]:
-                    self._swap(min_idx, parent)
-                index = min_idx
-            else:
-                break
+            # If we swapped with a grandchild, we might need to swap with its parent
+            if smallest >= 4 * index + 3:  # is grandchild
+                parent = (smallest - 1) // 2
+                if (self._data + smallest)[] > (self._data + parent)[]:
+                    self._swap(smallest, parent)
+
+            index = smallest
+
+        # while index * 2 + 1 < self._size:  # While has children
+        #     min_idx = index
+
+        #     # Check children and grandchildren
+        #     start = index * 2 + 1
+        #     end = min(self._size, start + 4)  # Up to 4 descendants
+
+        #     for i in range(start, end):
+        #         if (self._data + i)[] < (self._data + min_idx)[]:
+        #             min_idx = i
+
+        #     if min_idx == index:
+        #         break
+
+        #     self._swap(index, min_idx)
+
+        #     if min_idx - start >= 2:  # If grandchild was smallest
+        #         parent = (min_idx - 1) // 2
+        #         if (self._data + min_idx)[] > (self._data + parent)[]:
+        #             self._swap(min_idx, parent)
+        #         index = min_idx
+        #     else:
+        #         break
 
     fn _trickle_down_max(inout self, owned index: Int):
         """Moves an element down on a max level until heap properties are satisfied.
@@ -430,15 +485,24 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
             # Check children
             left = 2 * index + 1
             right = 2 * index + 2
-            if left < self._size and (self._data + left)[] > (self._data + largest)[]:
+            if (
+                left < self._size
+                and (self._data + left)[] > (self._data + largest)[]
+            ):
                 largest = left
-            if right < self._size and (self._data + right)[] > (self._data + largest)[]:
+            if (
+                right < self._size
+                and (self._data + right)[] > (self._data + largest)[]
+            ):
                 largest = right
 
             # Check grandchildren
             for i in range(4):
                 grandchild = 4 * index + i + 3
-                if grandchild < self._size and (self._data + grandchild)[] > (self._data + largest)[]:
+                if (
+                    grandchild < self._size
+                    and (self._data + grandchild)[] > (self._data + largest)[]
+                ):
                     largest = grandchild
 
             if largest == index:
