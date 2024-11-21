@@ -27,13 +27,13 @@ from collections import Optional
 from memory import UnsafePointer
 
 
-struct MinMaxHeap[ElementType: ComparableCollectionElement](
+struct MinMaxHeap[T: ComparableCollectionElement](
     Movable, ExplicitlyCopyable, Sized, Boolable
 ):
     """Implements a min-max heap data structure.
 
     Parameters:
-        ElementType: The type of elements in the heap.
+        T: The type of elements in the heap.
             Must implement the trait CompareCollectionElement.
     """
 
@@ -48,7 +48,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
     # Fields
     # ===-------------------------------------------------------------------===#
 
-    var _data: UnsafePointer[ElementType]
+    var _data: UnsafePointer[T]
     """The underlying storage for the heap elements."""
 
     var _size: Int
@@ -64,7 +64,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
     fn __init__(
         out self,
         *,
-        owned elements: Optional[List[ElementType]] = None,
+        owned elements: Optional[List[T]] = None,
         capacity: Int = Self.default_capacity,
     ):
         """Constructs an empty min-max heap.
@@ -81,7 +81,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
         if elements is not None and self._capacity < len(elements.value()):
             self._capacity = len(elements.value())
 
-        self._data = UnsafePointer[ElementType].alloc(self._capacity)
+        self._data = UnsafePointer[T].alloc(self._capacity)
         self._size = 0
 
         if elements is not None:
@@ -91,7 +91,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
             self._size = len(values)
             self._heapify()
 
-    fn __init__(out self, owned *values: ElementType):
+    fn __init__(out self, owned *values: T):
         """Constructs a heap from the given values.
 
         Args:
@@ -99,9 +99,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
         """
         self = Self(variadic_list=values^)
 
-    fn __init__(
-        out self, *, owned variadic_list: VariadicListMem[ElementType, _]
-    ):
+    fn __init__(out self, *, owned variadic_list: VariadicListMem[T, _]):
         """Constructs a heap from the given values.
 
         Args:
@@ -182,7 +180,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
     # Public methods
     # ===-------------------------------------------------------------------===#
 
-    fn push(inout self, owned value: ElementType):
+    fn push(inout self, owned value: T):
         """Pushes a new element onto the heap.
 
         Args:
@@ -195,7 +193,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
         (self._data + self._size - 1).init_pointee_move(value^)
         self._bubble_up(self._size - 1)
 
-    fn pop_min(inout self) raises -> ElementType:
+    fn pop_min(inout self) raises -> T:
         """Removes and returns the minimum element from the heap.
 
         Returns:
@@ -213,11 +211,11 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
         if self._size > 0:
             # Move last element to root and restore heap property
             (self._data + self._size).move_pointee_into(self._data)
-            self._trickle_down_min(0)
+            self._trickle_down(0, T.__lt__)
 
         return result
 
-    fn pop_max(inout self) raises -> ElementType:
+    fn pop_max(inout self) raises -> T:
         """Removes and returns the maximum element from the heap.
 
         Returns:
@@ -237,7 +235,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
             self._size = 1
             return (self._data + 1).take_pointee()
 
-        max_idx = 1 + ((self._data + 2)[] > (self._data + 1)[])
+        max_idx = 1 + (self._data[2] > self._data[1])
         result = (self._data + max_idx).take_pointee()
 
         # Move last element to max position and restore heap property
@@ -245,12 +243,12 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
             (self._data + self._size - 1).move_pointee_into(
                 self._data + max_idx
             )
-            self._trickle_down_max(max_idx)
+            self._trickle_down(max_idx, T.__gt__)
 
         self._size -= 1
         return result
 
-    fn get_min(self) raises -> ElementType:
+    fn get_min(self) raises -> T:
         """Returns the minimum element without removing it.
 
         Returns:
@@ -262,9 +260,9 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
         if self._size == 0:
             raise "IndexError: Heap is empty"
 
-        return (self._data)[]
+        return self._data[0]
 
-    fn get_max(self) raises -> ElementType:
+    fn get_max(self) raises -> T:
         """Returns the maximum element without removing it.
 
         Returns:
@@ -277,13 +275,13 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
             raise "IndexError: Heap is empty"
 
         if self._size == 1:
-            return (self._data)[]
+            return self._data[0]
 
         if self._size == 2:
-            return (self._data + 1)[]
+            return self._data[1]
 
-        max_idx = 1 + ((self._data + 2)[] > (self._data + 1)[])
-        return (self._data + max_idx)[]
+        max_idx = 1 + (self._data[2] > self._data[1])
+        return self._data[max_idx]
 
     fn clear(inout self):
         """Removes all elements from the heap."""
@@ -298,7 +296,7 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
     fn _grow(inout self):
         """Doubles the capacity of the heap's internal storage."""
         new_capacity = self._capacity * 2
-        new_data = UnsafePointer[ElementType].alloc(new_capacity)
+        new_data = UnsafePointer[T].alloc(new_capacity)
 
         for i in range(self._size):
             (self._data + i).move_pointee_into(new_data + i)
@@ -314,10 +312,8 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
 
         # Start from the last non-leaf node
         for i in range((self._size - 2) // 2, -1, -1):
-            if self._is_min_level(i):
-                self._trickle_down_min(i)
-            else:
-                self._trickle_down_max(i)
+            cmp = T.__lt__ if self._is_min_level(i) else T.__gt__
+            self._trickle_down(i, cmp)
 
     @always_inline
     fn _is_min_level(self, index: Int) -> Bool:
@@ -340,158 +336,82 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
         if index == 0:
             return
 
+        # Select comparison functions based on level
+        is_min_level = self._is_min_level(index)
+        parent_cmp = T.__gt__ if is_min_level else T.__lt__
+        grandparent_cmp = T.__lt__ if is_min_level else T.__gt__
+
         parent_idx = (index - 1) // 2
-
-        if self._is_min_level(index):
-            if (self._data + index)[] > (self._data + parent_idx)[]:
-                # If we're at a min level but larger than parent (which is at max level)
-                self._swap(index, parent_idx)
-                self._bubble_up_max(parent_idx)
-            else:
-                grandparent_idx = (parent_idx - 1) // 2
-                if (
-                    index >= 3
-                    and (self._data + index)[]
-                    < (self._data + grandparent_idx)[]
-                ):
-                    self._swap(index, grandparent_idx)
-                    self._bubble_up_min(grandparent_idx)
+        if parent_cmp(self._data[index], self._data[parent_idx]):
+            self._swap(index, parent_idx)
+            self._bubble_up_to_grandparent(parent_idx, parent_cmp)
         else:
-            if (self._data + index)[] < (self._data + parent_idx)[]:
-                # If we're at a max level but smaller than parent (which is at min level)
-                self._swap(index, parent_idx)
-                self._bubble_up_min(parent_idx)
-            else:
-                grandparent_idx = (parent_idx - 1) // 2
-                if (
-                    index >= 3
-                    and (self._data + index)[]
-                    > (self._data + grandparent_idx)[]
-                ):
-                    self._swap(index, grandparent_idx)
-                    self._bubble_up_max(grandparent_idx)
+            grandparent_idx = (parent_idx - 1) // 2
+            if index >= 3 and grandparent_cmp(
+                self._data[index], self._data[grandparent_idx]
+            ):
+                self._swap(index, grandparent_idx)
+                self._bubble_up_to_grandparent(grandparent_idx, grandparent_cmp)
 
-    fn _bubble_up_min(inout self, owned index: Int):
-        """Bubbles up an element on a min level.
+    fn _bubble_up_to_grandparent(
+        inout self, owned index: Int, cmp: fn (a: T, b: T) -> Bool
+    ):
+        """Bubbles up an element to its grandparent level if it satisfies the comparison.
 
         Args:
             index: The index of the element to bubble up.
+            cmp: The comparison function to use.
         """
         while index > 2:
-            parent_idx = (index - 1) // 2
-            grandparent_idx = (parent_idx - 1) // 2
-            if (self._data + index)[] < (self._data + grandparent_idx)[]:
+            grandparent_idx = (index - 3) // 4
+            if cmp(self._data[index], self._data[grandparent_idx]):
                 self._swap(index, grandparent_idx)
                 index = grandparent_idx
             else:
                 break
 
-    fn _bubble_up_max(inout self, owned index: Int):
-        """Bubbles up an element on a max level.
-
-        Args:
-            index: The index of the element to bubble up.
-        """
-        while index > 2:
-            parent_idx = (index - 1) // 2
-            grandparent_idx = (parent_idx - 1) // 2
-            if (self._data + index)[] > (self._data + grandparent_idx)[]:
-                self._swap(index, grandparent_idx)
-                index = grandparent_idx
-            else:
-                break    
-
-    fn _trickle_down_min(inout self, owned index: Int):
-        """Moves an element down on a min level until heap properties are satisfied.
+    fn _trickle_down(
+        inout self, owned index: Int, cmp: fn (a: T, b: T) -> Bool
+    ):
+        """Moves an element down the heap until heap properties are satisfied.
 
         Args:
             index: The index of the element to trickle down.
+            cmp: The comparison function to use (less than for min level, greater than for max level).
         """
         while True:
-            # Find smallest among children and grandchildren
-            smallest = index
+            # Find the best element among children and grandchildren
+            best_idx = index
 
             # Check children
-            left = 2 * index + 1
-            right = 2 * index + 2
-            if (
-                left < self._size
-                and (self._data + left)[] < (self._data + smallest)[]
-            ):
-                smallest = left
-            if (
-                right < self._size
-                and (self._data + right)[] < (self._data + smallest)[]
-            ):
-                smallest = right
+            child_idx = 2 * index + 1
+            for i in range(2):
+                child = child_idx + i
+                if child < self._size and cmp(self._data[child], self._data[best_idx]):
+                    best_idx = child
 
             # Check grandchildren
+            grandchild_idx = 4 * index + 3
             for i in range(4):
-                grandchild = 4 * index + i + 3
-                if (
-                    grandchild < self._size
-                    and (self._data + grandchild)[] < (self._data + smallest)[]
+                grandchild = grandchild_idx + i
+                if grandchild < self._size and cmp(
+                    self._data[grandchild], self._data[best_idx]
                 ):
-                    smallest = grandchild
+                    best_idx = grandchild
 
-            if smallest == index:
+            if best_idx == index:
                 break
 
-            self._swap(index, smallest)
+            self._swap(index, best_idx)
 
             # If we swapped with a grandchild, we might need to swap with its parent
-            if smallest >= 4 * index + 3:  # is grandchild
-                parent = (smallest - 1) // 2
-                if (self._data + smallest)[] > (self._data + parent)[]:
-                    self._swap(smallest, parent)
+            if best_idx >= grandchild_idx:
+                parent_idx = (best_idx - 1) // 2
+                # Use opposite comparison for parent level
+                if cmp(self._data[parent_idx], self._data[best_idx]):
+                    self._swap(best_idx, parent_idx)
 
-            index = smallest
-
-    fn _trickle_down_max(inout self, owned index: Int):
-        """Moves an element down on a max level until heap properties are satisfied.
-
-        Args:
-            index: The index of the element to trickle down.
-        """
-        while True:
-            # Find largest among children and grandchildren
-            largest = index
-
-            # Check children
-            left = 2 * index + 1
-            right = 2 * index + 2
-            if (
-                left < self._size
-                and (self._data + left)[] > (self._data + largest)[]
-            ):
-                largest = left
-            if (
-                right < self._size
-                and (self._data + right)[] > (self._data + largest)[]
-            ):
-                largest = right
-
-            # Check grandchildren
-            for i in range(4):
-                grandchild = 4 * index + i + 3
-                if (
-                    grandchild < self._size
-                    and (self._data + grandchild)[] > (self._data + largest)[]
-                ):
-                    largest = grandchild
-
-            if largest == index:
-                break
-
-            self._swap(index, largest)
-
-            # If we swapped with a grandchild, we might need to swap with its parent
-            if largest >= 4 * index + 3:  # is grandchild
-                parent = (largest - 1) // 2
-                if (self._data + largest)[] < (self._data + parent)[]:
-                    self._swap(largest, parent)
-
-            index = largest
+            index = best_idx
 
     fn _swap(inout self, i: Int, j: Int):
         """Swaps two elements in the heap.
