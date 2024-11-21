@@ -371,35 +371,35 @@ struct MinMaxHeap[ElementType: ComparableCollectionElement](
                     self._swap(index, grandparent_idx)
                     self._bubble_up_max(grandparent_idx)
 
-    fn _bubble_up_min(inout self, index: Int):
+    fn _bubble_up_min(inout self, owned index: Int):
         """Bubbles up an element on a min level.
 
         Args:
             index: The index of the element to bubble up.
         """
-        if index <= 2:
-            return
+        while index > 2:
+            parent_idx = (index - 1) // 2
+            grandparent_idx = (parent_idx - 1) // 2
+            if (self._data + index)[] < (self._data + grandparent_idx)[]:
+                self._swap(index, grandparent_idx)
+                index = grandparent_idx
+            else:
+                break
 
-        parent_idx = (index - 1) // 2
-        grandparent_idx = (parent_idx - 1) // 2
-        if (self._data + index)[] < (self._data + grandparent_idx)[]:
-            self._swap(index, grandparent_idx)
-            self._bubble_up_min(grandparent_idx)
-
-    fn _bubble_up_max(inout self, index: Int):
+    fn _bubble_up_max(inout self, owned index: Int):
         """Bubbles up an element on a max level.
 
         Args:
             index: The index of the element to bubble up.
         """
-        if index <= 2:
-            return
-
-        parent_idx = (index - 1) // 2
-        grandparent_idx = (parent_idx - 1) // 2
-        if (self._data + index)[] > (self._data + grandparent_idx)[]:
-            self._swap(index, grandparent_idx)
-            self._bubble_up_max(grandparent_idx)
+        while index > 2:
+            parent_idx = (index - 1) // 2
+            grandparent_idx = (parent_idx - 1) // 2
+            if (self._data + index)[] > (self._data + grandparent_idx)[]:
+                self._swap(index, grandparent_idx)
+                index = grandparent_idx
+            else:
+                break    
 
     fn _trickle_down_min(inout self, owned index: Int):
         """Moves an element down on a min level until heap properties are satisfied.
