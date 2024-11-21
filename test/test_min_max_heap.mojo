@@ -319,3 +319,116 @@ fn test_larger_heap() raises:
     assert_equal(heap.get_min(), 0)
     assert_equal(heap.get_max(), 9)
 
+
+fn test_mixed_operations() raises:
+    """Tests interleaved push and pop operations with varying patterns."""
+    heap = MinMaxHeap[Int]()
+
+    # Push in ascending order
+    for i in range(10):
+        heap.push(i)
+
+    # Push in descending order
+    for i in range(20, 10, -1):
+        heap.push(i)
+
+    assert_equal(heap.get_min(), 0)
+    assert_equal(heap.get_max(), 20)
+
+    # Alternating push and pop operations
+    heap.push(100)
+    assert_equal(heap.pop_max(), 100)
+    heap.push(-1)
+    assert_equal(heap.pop_min(), -1)
+    heap.push(50)
+    assert_equal(heap.get_max(), 50)
+
+    # Pop three elements from each end
+    mins = List[Int]()
+    maxs = List[Int]()
+    for _ in range(3):
+        mins.append(heap.pop_min())
+        maxs.append(heap.pop_max())
+
+    assert_equal(mins, List(0, 1, 2))
+    assert_equal(maxs, List(50, 20, 19))
+
+    # Clear and rebuild
+    heap.clear()
+    for i in range(5):
+        heap.push(i)
+        heap.push(i)  # Duplicates
+
+    # Verify size and extremes
+    assert_equal(len(heap), 10)
+    assert_equal(heap.get_min(), 0)
+    assert_equal(heap.get_max(), 4)
+
+
+fn test_large_scale_operations() raises:
+    """Tests operations on a large heap with various patterns."""
+    heap = MinMaxHeap[Int]()
+
+    # Create a large sequence with specific patterns
+    sequence = List[Int]()
+
+    # Add some ordered sequences
+    for i in range(0, 50, 2):  # Even numbers
+        sequence.append(i)
+    for i in range(49, -1, -2):  # Odd numbers in reverse
+        sequence.append(i)
+
+    # Add some duplicates
+    for i in range(10):
+        sequence.append(i)
+        sequence.append(i)
+
+    # Add some extreme values
+    sequence.append(100)
+    sequence.append(-100)
+    sequence.append(100)
+    sequence.append(-100)
+
+    # Build heap and verify properties
+    heap = MinMaxHeap(elements=sequence)
+    assert_equal(heap.get_min(), -100)
+    assert_equal(heap.get_max(), 100)
+
+    # Test removing extremes
+    mins = List[Int]()
+    maxs = List[Int]()
+
+    # Remove 10 elements from each end
+    for _ in range(10):
+        mins.append(heap.pop_min())
+        maxs.append(heap.pop_max())
+
+    # Verify the sequences
+    assert_equal(mins[0:2], List(-100, -100))  # Should get both -100s first
+    assert_equal(maxs[0:2], List(100, 100))    # Should get both 100s first
+
+    # Push elements while popping
+    initial_size = len(heap)
+    result = List[Int]()
+
+    for i in range(10):
+        heap.push(i * 2)       # Even numbers
+        result.append(heap.pop_min())
+        heap.push(i * 2 + 1)   # Odd numbers
+        result.append(heap.pop_max())
+
+    # Size should be unchanged as we pushed and popped equal numbers
+    assert_equal(len(heap), initial_size)
+
+    # Verify the heap still maintains its properties
+    min_val = heap.get_min()
+    max_val = heap.get_max()
+
+    # Empty the heap and verify it's sorted
+    final_sequence = List[Int]()
+    while heap:
+        final_sequence.append(heap.pop_min())
+
+    # Verify the sequence is sorted
+    for i in range(len(final_sequence) - 1):
+        assert_true(final_sequence[i] <= final_sequence[i + 1])

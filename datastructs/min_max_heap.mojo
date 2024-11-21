@@ -305,15 +305,33 @@ struct MinMaxHeap[T: ComparableCollectionElement](
         self._data = new_data
         self._capacity = new_capacity
 
+    # fn _heapify(inout self):
+    #     """Converts the array into a min-max heap."""
+    #     if self._size <= 1:
+    #         return
+
+    #     # Start from the last non-leaf node
+    #     for i in range((self._size - 2) // 2, -1, -1):
+    #         cmp = T.__lt__ if self._is_min_level(i) else T.__gt__
+    #         self._trickle_down(i, cmp)
+
     fn _heapify(inout self):
         """Converts the array into a min-max heap."""
         if self._size <= 1:
             return
 
-        # Start from the last non-leaf node
-        for i in range((self._size - 2) // 2, -1, -1):
+        last_node = (self._size - 2) // 2
+        first_with_grandchild = (self._size - 4) // 4  # last node that might have a grandchild
+
+        # First phase: nodes that can only have children
+        for i in range(last_node, first_with_grandchild, -1):
             cmp = T.__lt__ if self._is_min_level(i) else T.__gt__
-            self._trickle_down(i, cmp)
+            self._trickle_down_simple(i, cmp)  # version that only checks children
+
+        # Second phase: nodes that might have grandchildren
+        for i in range(first_with_grandchild, -1, -1):
+            cmp = T.__lt__ if self._is_min_level(i) else T.__gt__
+            self._trickle_down(i, cmp)  # full version that checks both children and grandchildren    
 
     @always_inline
     fn _is_min_level(self, index: Int) -> Bool:
@@ -411,6 +429,31 @@ struct MinMaxHeap[T: ComparableCollectionElement](
                 if cmp(self._data[parent_idx], self._data[best_idx]):
                     self._swap(best_idx, parent_idx)
 
+            index = best_idx
+
+    fn _trickle_down_simple(
+        inout self, owned index: Int, cmp: fn(a: T, b: T) -> Bool
+    ):
+        """Moves an element down checking only children (no grandchildren).
+        
+        Args:
+            index: The index of the element to trickle down.
+            cmp: The comparison function to use.
+        """
+        while True:
+            best_idx = index
+            
+            # Check children
+            child_idx = 2 * index + 1
+            for i in range(2):
+                child = child_idx + i
+                if child < self._size and cmp(self._data[child], self._data[best_idx]):
+                    best_idx = child
+
+            if best_idx == index:
+                break
+
+            self._swap(index, best_idx)
             index = best_idx
 
     fn _swap(inout self, i: Int, j: Int):
